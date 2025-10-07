@@ -11,11 +11,11 @@ export class HomeComponent implements OnInit {
   constructor(private authService: AuthService, private router: Router) {}
 
   createPortfolio() {
-    if (this.authService.isLoggedIn()) {
+   /* if (this.authService.isLoggedIn()) {
       this.router.navigate(['/creation']);
     } else {
       this.router.navigate(['/login']);
-    }
+    } */
   }
 
   ngOnInit(): void {}

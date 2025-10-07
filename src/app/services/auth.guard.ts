@@ -41,10 +41,12 @@ export class PublicGuard implements CanActivate {
   ) {}
 
   canActivate(): boolean {
-    if (this.authService.isLoggedIn()) {
+    return !!localStorage.getItem('token'); // vrai si token présent
+
+  /*  if (this.authService.isLoggedIn()) {
       this.router.navigate(['/']);
       return false;
     }
-    return true;
+    return true; */
   }
 }

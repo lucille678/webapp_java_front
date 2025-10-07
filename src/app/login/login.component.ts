@@ -32,18 +32,24 @@ export class LoginComponent {
 
     const { email, password } = this.loginForm.value;
 
-    // 🔐 Simulation d'une authentification
-    const isValid = this.auth.loginWithCredentials(email, password);
+    // Utilisation du mock pour tester sans BDD
+    this.auth.loginMock(email, password);
 
+    // Naviguer vers l'espace connecté (par exemple "creation")
+    this.router.navigate(['/creation']);
+/*
     if (isValid) {
       this.router.navigate(['/dashboard']);
     } else {
       this.errorMessage = 'Email ou mot de passe incorrect';
     }
+*/
   }
 
   goToRegister() {
     this.router.navigate(['/inscription']);
   }
 }
+
+
 

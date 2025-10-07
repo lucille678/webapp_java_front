@@ -10,7 +10,8 @@ import { Router } from '@angular/router';
 })
 export class NavbarComponent implements OnInit {
   links: Link[] = [
-    { name: 'Mes Portfolios', href: '/creation' },
+    { name: 'Accueil', href: '/home' },
+    { name: 'Mes Portfolios', href: '/myportfolio' },
     { name: 'Mon Audience', href: '/statistics' },
   ];
 

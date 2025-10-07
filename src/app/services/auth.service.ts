@@ -46,7 +46,7 @@ export class AuthService {
   ) {}
 
   register(data: RegisterData): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/register`, data)
+    return this.http.post<AuthResponse>(`${this.apiUrl}/inscription`, data)
       .pipe(
         tap(response => {
           this.handleAuthSuccess(response);
@@ -115,18 +115,12 @@ export class AuthService {
     });
   }
 
-  loginWithCredentials(email: string, password: string): boolean {
-    //  méthode "fake" pour tester sans backend
-    if (email && password) {
-      const fakeUser: User = { nom: 'Test', prenom: 'User', email };
-      localStorage.setItem(this.TOKEN_KEY, 'fake-jwt-token');
-      localStorage.setItem('user', JSON.stringify(fakeUser));
-
-      this.currentUserSubject.next(fakeUser);
-      this.isAuthenticatedSubject.next(true);
-
-      return true;
-    }
-    return false;
+  loginMock(email: string, password: string) {
+    // Simule la connexion : n’importe quel email/mot de passe fonctionne
+    const user = { id: '1', nom: 'Test', prenom: 'User', email };
+    localStorage.setItem('token', 'fake-token'); // faux token
+    localStorage.setItem('user', JSON.stringify(user));
+    this.isAuthenticatedSubject.next(true);
+    this.currentUserSubject.next(user);
   }
 }

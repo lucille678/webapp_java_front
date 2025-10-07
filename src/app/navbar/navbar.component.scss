@@ -1,40 +1,65 @@
-@use "theme";
-
 nav {
-  height: 80px;
-  background-color: antiquewhite;
+  background-color: #f3eac4; // Beige
+  border-bottom: 1px solid #cdcdcd; // Barre grise
+  padding: 0;
+}
 
-  div {
-    height: 100%;
-    display: flex;
-    align-items: center;
+.navbar-container {
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
 
-    img {
-      margin-left: 20px;
-      height: 60px;
-      transition: 0.3s;
+.logo {
+  height: 90px;
+  width: auto;
+  cursor: pointer;
+  padding: 12px 0;
+  margin-right: 28px;
+}
 
-      &:hover {
-        transform: scale(1.1);
-      }
+mat-nav-list {
+  display: flex;
+  flex-direction: row;
+  padding: 0;
+
+  a[mat-list-item] {
+    color: #57020d;
+    width: auto;
+    height: auto;
+    padding: 16px 20px;
+    text-decoration: none;
+    transition: color 0.2s ease;
+    border-radius: 0;
+    background-color: transparent !important;
+
+    &::before,
+    &::after {
+      display: none !important;
+    }
+
+    &:hover {
+      color: #333;
+      background-color: transparent !important;
+    }
+
+    &.active {
+      color: #6c0210;
+      font-weight: 500;
+      background-color: transparent !important;
     }
   }
 }
 
-mat-nav-list {
-  margin-left: 50px;
-  display: flex;
-  flex-direction: row;
-  width: 250px;
+// Supprime l'effet ripple de Material globalement pour la navbar
+::ng-deep nav {
+  .mat-mdc-list-item-interactive::before {
+    display: none !important;
+  }
 
-  span,
-  a {
-    font-size: large;
-    color: theme.$white;
-    transition: 0.3s;
-
-    &:hover {
-      transform: scale(1.2);
-    }
+  .mat-ripple {
+    display: none !important;
   }
 }

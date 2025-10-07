@@ -1,12 +1,15 @@
 <nav>
-  <div>
-    <img src="assets/logo.png" routerLink="" />
+  <div class="navbar-container">
+    <img src="assets/logo.png" routerLink="/" class="logo" />
+
     <mat-nav-list>
-      @for (link of links; track link) {
-      <a mat-list-item routerLink="{{ link.href }}" routerLinkActive="active">
-        <span>{{ link.name }}</span>
-      </a>
+      @for (link of links; track link.name) {
+        <a mat-list-item [routerLink]="link.href" routerLinkActive="active">
+          {{ link.name }}
+        </a>
       }
     </mat-nav-list>
   </div>
 </nav>
+
+

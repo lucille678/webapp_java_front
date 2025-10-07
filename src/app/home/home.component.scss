@@ -1,6 +1,6 @@
 .banner {
   position: relative;
-  background: url("assets/banner1.jpg") center/cover no-repeat;
+  background: url("/assets/banner1.jpg") center/cover no-repeat;
   height: 300px;
   display: flex;
   align-items: center;
@@ -52,6 +52,28 @@
   margin-bottom: 15px;
   color: #333;
 }
+
+.center-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.create-portfolio {
+  background-color: #b13277;
+  color: white;
+  padding: 0.8rem 1.2rem;
+  border-radius: 0.5rem;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.3s;
+
+  &:hover {
+    background-color: #852559;
+  }
+}
+
 
 .text-side p {
   font-size: 1.1rem;

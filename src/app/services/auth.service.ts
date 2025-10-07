@@ -32,6 +32,7 @@ export interface AuthResponse {
 })
 export class AuthService {
   private apiUrl = 'http://localhost:3000/api/auth';
+  private readonly TOKEN_KEY = 'token';
 
   private currentUserSubject = new BehaviorSubject<User | null>(this.getUserFromStorage());
   public currentUser$ = this.currentUserSubject.asObservable();
@@ -112,5 +113,20 @@ export class AuthService {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${token}`
     });
+  }
+
+  loginWithCredentials(email: string, password: string): boolean {
+    //  méthode "fake" pour tester sans backend
+    if (email && password) {
+      const fakeUser: User = { nom: 'Test', prenom: 'User', email };
+      localStorage.setItem(this.TOKEN_KEY, 'fake-jwt-token');
+      localStorage.setItem('user', JSON.stringify(fakeUser));
+
+      this.currentUserSubject.next(fakeUser);
+      this.isAuthenticatedSubject.next(true);
+
+      return true;
+    }
+    return false;
   }
 }

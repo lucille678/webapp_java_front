@@ -1,0 +1,124 @@
+/* === CONTENEUR PRINCIPAL === */
+.login-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: linear-gradient(135deg, #f3eac4 0%, #f8f9fa 100%);
+}
+
+/* === CARTE DE CONNEXION === */
+.login-container {
+  width: 380px;
+  padding: 2.5rem 2rem;
+  border-radius: 1.5rem;
+  background: #ffffff;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  text-align: center;
+  animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* === TITRE === */
+h2 {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 1.8rem;
+}
+
+/* === FORMULAIRE === */
+.form-group {
+  margin-bottom: 1.2rem;
+  text-align: left;
+
+  label {
+    font-weight: 500;
+    font-size: 0.95rem;
+    color: #555;
+    margin-bottom: 0.3rem;
+    display: block;
+  }
+
+  input {
+    width: 100%;
+    padding: 0.7rem;
+    border: 1px solid #ccc;
+    border-radius: 0.6rem;
+    transition: all 0.2s ease;
+    font-size: 0.95rem;
+
+    &:focus {
+      outline: none;
+      border-color: #007bff;
+      box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.15);
+    }
+  }
+}
+
+/* === BOUTON DE CONNEXION === */
+button {
+  width: 100%;
+  padding: 0.8rem;
+  background: linear-gradient(135deg, #007bff, #0056b3);
+  border: none;
+  color: white;
+  font-weight: 600;
+  border-radius: 0.6rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: linear-gradient(135deg, #0056b3, #004090);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 86, 179, 0.3);
+  }
+
+  &:active {
+    transform: translateY(0);
+    box-shadow: none;
+  }
+}
+
+/* === MESSAGE D'ERREUR === */
+.error {
+  color: #d9534f;
+  font-size: 0.9rem;
+  text-align: center;
+  margin-top: 0.8rem;
+}
+
+/* === LIEN D'INSCRIPTION === */
+.register-link {
+  margin-top: 1.5rem;
+  font-size: 0.95rem;
+  color: #555;
+
+  a {
+    color: #007bff;
+    font-weight: 500;
+    text-decoration: none;
+    margin-left: 0.3rem;
+    transition: color 0.3s ease;
+
+    &:hover {
+      color: #0056b3;
+      text-decoration: underline;
+    }
+
+    &:active {
+      color: #003f8c;
+    }
+  }
+}
+

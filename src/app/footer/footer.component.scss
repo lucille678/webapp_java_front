@@ -1,0 +1,26 @@
+.site-footer {
+  background-color: #b13277; /* bordeaux */
+  color: white;
+  padding: 20px 10%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  font-family: "DM Sans", sans-serif;
+  font-size: 0.95rem;
+}
+
+.site-footer a {
+  color: white;
+  text-decoration: none;
+  margin: 0 8px;
+  transition: 0.3s;
+}
+
+.site-footer a:hover {
+  color: #ffd9d9;
+}
+
+.socials a {
+  font-size: 1.2rem;
+}

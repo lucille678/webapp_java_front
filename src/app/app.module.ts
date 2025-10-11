@@ -12,13 +12,15 @@ import { MatIconModule } from "@angular/material/icon"
 import { MatButtonModule } from "@angular/material/button"
 import { HttpClientModule } from "@angular/common/http"
 import {InscriptionComponent} from "./inscription/inscription.component";
+import {FooterComponent} from "./footer/footer.component";
 
 @NgModule({
   declarations: [
     AppComponent,
     NavbarComponent,
     HomeComponent,
-    InscriptionComponent
+    InscriptionComponent,
+    FooterComponent,
   ],
   imports: [
     BrowserModule,

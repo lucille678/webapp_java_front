@@ -4,11 +4,11 @@ import { Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 
 @Component({
-  selector: 'inscription',
-  templateUrl: './inscription.component.html',
-  styleUrls: ['./inscription.component.scss']
+  selector: 'register',
+  templateUrl: './register.component.html',
+  styleUrls: ['./register.component.scss']
 })
-export class InscriptionComponent {
+export class RegisterComponent {
   formData = {
     nom: '',
     prenom: '',

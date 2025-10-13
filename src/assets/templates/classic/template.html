@@ -1,10 +1,19 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Title</title>
-</head>
-<body>
+<div class="classic-template">
+  <header>
+    <img *ngIf="data.photo" [src]="data.photo" alt="Photo de profil">
+    <h1>{{ data.name }}</h1>
+    <p>{{ data.bio }}</p>
+  </header>
 
-</body>
-</html>
+  <section class="skills" *ngIf="data.skills">
+    <h2>Compétences</h2>
+    <p>{{ data.skills }}</p>
+  </section>
+
+  <section class="contact" *ngIf="data.email || data.linkedin">
+    <h2>Contact</h2>
+    <p *ngIf="data.email">📧 {{ data.email }}</p>
+    <p *ngIf="data.linkedin">🔗 {{ data.linkedin }}</p>
+  </section>
+</div>
+

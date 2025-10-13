@@ -1,0 +1,27 @@
+<div class="editor" *ngIf="config">
+  <h1>{{ config.title }}</h1>
+
+  <form (ngSubmit)="onSubmit()">
+    <div *ngFor="let field of config.fields" class="field">
+      <label>{{ field.label }}</label>
+
+      <input *ngIf="field.type === 'text' || field.type === 'email'"
+             [type]="field.type"
+             [(ngModel)]="formData[field.name]"
+             [name]="field.name" />
+
+      <textarea *ngIf="field.type === 'textarea'"
+                [(ngModel)]="formData[field.name]"
+                [name]="field.name"
+                rows="3"></textarea>
+
+      <input *ngIf="field.type === 'file'"
+             type="file"
+             (change)="onFileChange($event, field.name)" />
+
+    </div>
+
+    <button type="submit">Voir mon portfolio</button>
+  </form>
+</div>
+

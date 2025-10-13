@@ -2,23 +2,42 @@
   <h1>{{ config.title }}</h1>
 
   <form (ngSubmit)="onSubmit()">
-    <div *ngFor="let field of config.fields" class="field">
-      <label>{{ field.label }}</label>
 
-      <input *ngIf="field.type === 'text' || field.type === 'email'"
-             [type]="field.type"
-             [(ngModel)]="formData[field.name]"
-             [name]="field.name" />
+    <div *ngFor="let section of config.sections" class="section">
+      <button type="button" class="section-toggle" (click)="section.open = !section.open">
+        {{ section.label }}
+        <span>{{ section.open ? '▲' : '▼' }}</span>
+      </button>
 
-      <textarea *ngIf="field.type === 'textarea'"
-                [(ngModel)]="formData[field.name]"
-                [name]="field.name"
-                rows="3"></textarea>
+      <div class="section-content" *ngIf="section.open">
+        <ng-container *ngIf="!section.repeatable">
+          <div *ngFor="let field of section.fields" class="field">
+            <label>{{ field.label }}</label>
 
-      <input *ngIf="field.type === 'file'"
-             type="file"
-             (change)="onFileChange($event, field.name)" />
+            <input *ngIf="field.type === 'text' || field.type === 'email'"
+                   [type]="field.type"
+                   [(ngModel)]="formData[section.name][field.name]"
+                   [name]="section.name + '_' + field.name">
 
+            <textarea *ngIf="field.type === 'textarea'"
+                      [(ngModel)]="formData[section.name][field.name]"
+                      [name]="section.name + '_' + field.name"></textarea>
+          </div>
+        </ng-container>
+
+        <ng-container *ngIf="section.repeatable">
+          <div *ngFor="let item of formData[section.name]; let i = index" class="repeatable-item">
+            <div *ngFor="let field of section.fields" class="field">
+              <label>{{ field.label }}</label>
+              <input *ngIf="field.type === 'text' || field.type === 'email'" [type]="field.type" [(ngModel)]="formData[section.name][i][field.name]" [name]="section.name + '_' + field.name + '_' + i">
+              <textarea *ngIf="field.type === 'textarea'" [(ngModel)]="formData[section.name][i][field.name]" [name]="section.name + '_' + field.name + '_' + i"></textarea>
+            </div>
+            <button type="button" (click)="removeItem(section.name, i)">Supprimer</button>
+          </div>
+          <button type="button" (click)="addItem(section.name)">Ajouter {{ section.label }}</button>
+        </ng-container>
+
+      </div>
     </div>
 
     <button type="submit">Voir mon portfolio</button>

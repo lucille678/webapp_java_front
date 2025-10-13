@@ -1,9 +1,9 @@
 import { NgModule } from "@angular/core"
 import { RouterModule, Routes } from "@angular/router"
-import { HomeComponent } from "home/home.component"
+import { HomeComponent } from "./home/home.component"
 import {CreationComponent} from "./creation/creation.component";
 import {StatisticsComponent} from "./statistics/statistics.component";
-import { InscriptionComponent } from './inscription/inscription.component';
+import { InscriptionComponent } from "./inscription/inscription.component";
 import { AuthGuard } from './services/auth.guard';
 import {LoginComponent} from "./login/login.component";
 import {MyportfolioComponent} from "./myportfolio/myportfolio.component";

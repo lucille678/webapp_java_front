@@ -1,7 +1,4 @@
 import {Component, OnInit} from '@angular/core';
-import {map, Observable} from "rxjs";
-import {Student} from "../models/student.model";
-import {ActivatedRoute} from "@angular/router";
 
 @Component({
   selector: 'creation',

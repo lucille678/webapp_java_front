@@ -1,25 +1,45 @@
 .banner {
   position: relative;
-  background: url("assets/banner1.jpg") center/cover no-repeat;
+  background: url("/assets/banner2.jpg") center/cover no-repeat;
   height: 300px;
   display: flex;
   align-items: center;
   justify-content: center;
+  color: white;
+  text-align: center;
+  overflow: hidden;
+}
+
+.banner::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1;
 }
 
 .banner-overlay {
-  background: rgba(0, 0, 0, 0.5);
-  color: white;
-  padding: 40px 80px;
-  border-radius: 10px;
-  text-align: center;
+  position: relative;
+  z-index: 2;
 }
 
 .banner-overlay h1 {
-  font-size: 2.5rem;
-  letter-spacing: 1px;
+  font-family: "BBH Sans Hegarty", sans-serif;
   font-weight: 600;
+  font-size: 2.8rem;
+  letter-spacing: 1px;
 }
+
+.banner-overlay p {
+  font-family: "DM Sans", sans-serif;
+  font-weight: 400;
+  font-size: 1.1rem;
+  margin-top: 10px;
+}
+
 
 .content-section {
   padding: 60px 10%;
@@ -38,8 +58,8 @@
 .image-side img {
   width: 100%;
   max-width: 500px;
-  border-radius: 12px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  border-radius: 0;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 .text-side {
@@ -48,10 +68,106 @@
 }
 
 .text-side h2 {
+  font-family: "BBH Sans Hegarty", sans-serif;
   font-size: 1.8rem;
   margin-bottom: 15px;
   color: #333;
 }
+
+.text-side p {
+  font-family: "DM Sans", sans-serif;
+  font-size: 1.8rem;
+  margin-bottom: 15px;
+  color: #333;
+}
+
+.center-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.create-portfolio {
+  background-color: #6c0210;
+  color: white;
+  padding: 0.8rem 1.5rem;
+  border-radius: 0.6rem;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  font-family: "BBH Sans Hegarty", sans-serif;
+  font-size: 1.1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 4px 12px rgb(62, 1, 9);
+  transition: 0.3s ease, transform 0.2s ease;
+
+  &:hover {
+    background-color: #6c0210;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 14px rgb(87, 2, 13);
+  }
+}
+
+.steps-section {
+  padding: 80px 10%;
+  background-color: #f8f4ef;
+  text-align: center;
+}
+
+.step-number {
+  font-family: "BBH Sans Bartle", sans-serif;
+  font-size: 2rem;
+}
+
+.steps-section h2 {
+  font-family: "BBH Sans Hegarty", sans-serif;
+  color: #910315;
+  font-size: 2rem;
+  margin-bottom: 50px;
+}
+
+.steps-container {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  gap: 30px;
+}
+
+.step {
+  background-color: white;
+  border: 2px solid #6c0210;
+  border-radius: 1rem;
+  padding: 30px 20px;
+  width: 280px;
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.1);
+  transition: 0.3s ease;
+}
+
+.step:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 16px rgb(62, 1, 9);
+}
+
+.step-icon {
+  font-size: 2.5rem;
+  color: #57020d;
+  margin-bottom: 15px;
+}
+
+.step h3 {
+  font-family: "BBH Sans Hegarty", sans-serif;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.step p {
+  font-family: "DM Sans", sans-serif;
+  color: #555;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
 
 .text-side p {
   font-size: 1.1rem;

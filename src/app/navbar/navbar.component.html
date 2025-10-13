@@ -9,6 +9,22 @@
         </a>
       }
     </mat-nav-list>
+
+    <div class="user-container" (click)="toggleDropdown()">
+      <i class="bi bi-person-circle"></i>
+      <div class="dropdown" *ngIf="showDropdown">
+        <ng-container *ngIf="!isAuthenticated; else loggedInMenu">
+          <button mat-button (click)="login()">Se connecter</button>
+          <button mat-button (click)="register()">Créer un compte</button>
+        </ng-container>
+
+        <ng-template #loggedInMenu>
+          <button mat-button (click)="goToDashboard()">Mon compte</button>
+          <button mat-button (click)="logout()">Déconnexion</button>
+        </ng-template>
+
+      </div>
+    </div>
   </div>
 </nav>
 

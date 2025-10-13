@@ -8,6 +8,7 @@ import {LoginComponent} from "./login/login.component";
 import {MyportfolioComponent} from "./myportfolio/myportfolio.component";
 import {TemplatesComponent} from "./templates/templates.component";
 import { TemplateEditorComponent } from './creation/template-editor/template-editor.component';
+import { TemplatePreviewComponent } from './creation/template-preview/template-preview.component';
 
 
 const routes: Routes = [
@@ -18,6 +19,7 @@ const routes: Routes = [
   { path: 'myportfolio', component: MyportfolioComponent},
   { path: 'templates', component: TemplatesComponent},
   { path: 'creation/template-editor/:templateName', component: TemplateEditorComponent},
+  { path: 'preview', component: TemplatePreviewComponent },
   { path: '**', redirectTo: ''}
 ]
 /* canActivate: [AuthGuard] */

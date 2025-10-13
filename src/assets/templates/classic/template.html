@@ -1,19 +1,35 @@
 <div class="classic-template">
   <header>
-    <img *ngIf="data.photo" [src]="data.photo" alt="Photo de profil">
-    <h1>{{ data.name }}</h1>
-    <p>{{ data.bio }}</p>
+    <img *ngIf="{{ photo }}" src="{{ photo }}" alt="Photo de profil" style="width:120px; border-radius:50%">
+    <h1>{{ firstName }} {{ lastName }}</h1>
+    <p>{{ objective }}</p>
+    <p>{{ bio }}</p>
+    <p>Lieux : {{ locations }}</p>
   </header>
 
-  <section class="skills" *ngIf="data.skills">
-    <h2>Compétences</h2>
-    <p>{{ data.skills }}</p>
+  <section>
+    <h2>Formation</h2>
+    <div *ngFor="let f of formation">
+      <h3>{{ f.degree }} ({{ f.dates }})</h3>
+      <p>{{ f.description }}</p>
+    </div>
   </section>
 
-  <section class="contact" *ngIf="data.email || data.linkedin">
-    <h2>Contact</h2>
-    <p *ngIf="data.email">📧 {{ data.email }}</p>
-    <p *ngIf="data.linkedin">🔗 {{ data.linkedin }}</p>
+  <section>
+    <h2>Expériences</h2>
+    <div *ngFor="let e of experience">
+      <h3>{{ e.jobTitle }} - {{ e.company }} ({{ e.dates }})</h3>
+      <p>{{ e.description }}</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Compétences</h2>
+    <p>Soft Skills : {{ softSkills }}</p>
+    <p>Hard Skills : {{ hardSkills }}</p>
+    <p>Langues : {{ languages }}</p>
+    <p>Certificats : {{ certificates }}</p>
   </section>
 </div>
+
 

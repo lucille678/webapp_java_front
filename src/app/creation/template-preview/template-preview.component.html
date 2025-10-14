@@ -1,3 +1,31 @@
+
+<div class="preview-container">
+  <!-- NAVBAR -->
+  <nav class="portfolio-nav" [class.scrolled]="isScrolled">
+    <div class="nav-content">
+      <div class="nav-logo">Portfolio</div>
+
+      <button class="mobile-toggle" (click)="toggleMobileMenu()">
+        ☰
+      </button>
+
+      <ul class="nav-links" [class.mobile-open]="mobileMenuOpen">
+        <li><a href="#home" (click)="scrollToSection('home')">Accueil</a></li>
+        <li><a href="#formation" (click)="scrollToSection('formation')">Formation</a></li>
+        <li><a href="#experience" (click)="scrollToSection('experience')">Expériences</a></li>
+        <li><a href="#competences" (click)="scrollToSection('competences')">Compétences</a></li>
+      </ul>
+
+      <div class="nav-actions" [class.mobile-open]="mobileMenuOpen">
+        <button class="btn-edit" (click)="goBackToEdit()">✏️ Modifier</button>
+        <button class="btn-publish" (click)="publish()">🚀 Publier</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- CONTENU DU PORTFOLIO -->
+  <div class="portfolio-content" [innerHTML]="renderedHtml"></div>
+</div>
 <div class="preview">
   <h1>Mon Portfolio</h1>
   <div [innerHTML]="templateHtml"></div>

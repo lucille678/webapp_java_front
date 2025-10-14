@@ -1,14 +1,21 @@
-.btn-principal {
-  background-color: #dcd0a0;
-  color: #57020d;
+.create-portfolio {
+  background-color: #6c0210;
+  color: white;
+  padding: 0.8rem 1.5rem;
+  border-radius: 0.6rem;
   border: none;
-  border-radius: 8px;
-  padding: 10px 20px;
-  font-size: 16px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
-}
+  font-weight: bold;
+  font-family: "BBH Sans Hegarty", sans-serif;
+  font-size: 1.1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 4px 12px rgb(62, 1, 9);
+  transition: 0.3s ease, transform 0.2s ease;
 
-.btn-principal:hover {
-  background-color: #f1c2c9;
+  &:hover {
+    background-color: #6c0210;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 14px rgb(87, 2, 13);
+  }
 }

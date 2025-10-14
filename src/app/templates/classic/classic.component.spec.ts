@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { InscriptionComponent } from './inscription.component';
+import { ClassicComponent } from './classic.component';
 
-describe('InscriptionComponent', () => {
-  let component: InscriptionComponent;
-  let fixture: ComponentFixture<InscriptionComponent>;
+describe('ClassicComponent', () => {
+  let component: ClassicComponent;
+  let fixture: ComponentFixture<ClassicComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [InscriptionComponent]
+      imports: [ClassicComponent]
     })
     .compileComponents();
     
-    fixture = TestBed.createComponent(InscriptionComponent);
+    fixture = TestBed.createComponent(ClassicComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

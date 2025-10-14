@@ -31,7 +31,7 @@ export interface AuthResponse {
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:3000/api/auth';
+  private apiUrl = 'http://localhost:8080';
   private readonly TOKEN_KEY = 'token';
 
   private currentUserSubject = new BehaviorSubject<User | null>(this.getUserFromStorage());
@@ -46,7 +46,7 @@ export class AuthService {
   ) {}
 
   register(data: RegisterData): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/inscription`, data)
+    return this.http.post<AuthResponse>(`${this.apiUrl}/register`, data)
       .pipe(
         tap(response => {
           this.handleAuthSuccess(response);
@@ -116,11 +116,26 @@ export class AuthService {
   }
 
   loginMock(email: string, password: string) {
-    // Simule la connexion : n’importe quel email/mot de passe fonctionne
+    // Simule la connexion : n'importe quel email/mot de passe fonctionne
     const user = { id: '1', nom: 'Test', prenom: 'User', email };
     localStorage.setItem('token', 'fake-token'); // faux token
     localStorage.setItem('user', JSON.stringify(user));
     this.isAuthenticatedSubject.next(true);
     this.currentUserSubject.next(user);
   }
+
+  getAllUsers(): Observable<User[]> {
+    const headers = this.getAuthHeaders();
+    return this.http.get<User[]>(`${this.apiUrl}/users`, { headers })
+      .pipe(
+        tap(users => {
+          console.log('Tous les utilisateurs:', users);
+        }),
+        catchError(error => {
+          console.error('Erreur récupération utilisateurs:', error);
+          return of([]); // renvoie un tableau vide en cas d'erreur
+        })
+      );
+  }
+
 }

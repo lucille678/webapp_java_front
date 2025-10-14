@@ -1,0 +1,102 @@
+<div class="editor" *ngIf="config">
+  <h1>{{ config.title }}</h1>
+
+  <form (ngSubmit)="onSubmit()">
+
+    <div *ngFor="let section of config.sections" class="section">
+      <button type="button" class="section-toggle" (click)="section.open = !section.open">
+        {{ section.label }}
+        <span>{{ section.open ? '▲' : '▼' }}</span>
+      </button>
+
+      <div class="section-content" *ngIf="section.open">
+        <!-- Section NON répétable -->
+        <ng-container *ngIf="!section.repeatable">
+          <div *ngFor="let field of section.fields" class="field">
+            <label>{{ field.label }}</label>
+
+            <!-- Champ texte/email -->
+            <input *ngIf="field.type === 'text' || field.type === 'email'"
+                   [type]="field.type"
+                   [(ngModel)]="formData[section.name][field.name]"
+                   [name]="section.name + '_' + field.name">
+
+            <!-- Champ textarea -->
+            <textarea *ngIf="field.type === 'textarea'"
+                      [(ngModel)]="formData[section.name][field.name]"
+                      [name]="section.name + '_' + field.name"></textarea>
+
+            <!-- Champ fichier -->
+            <input *ngIf="field.type === 'file'"
+                   type="file"
+                   accept="image/*,.pdf"
+                   (change)="onFileChange($event, section.name, field.name)">
+
+            <!-- Prévisualisation image -->
+            <img *ngIf="formData[section.name][field.name]?.type?.startsWith('image/')"
+                 [src]="formData[section.name][field.name]?.content"
+                 alt="Aperçu"
+                 style="max-width: 150px; margin-top: 10px; border-radius: 8px;">
+
+            <!-- Aperçu PDF -->
+            <div *ngIf="formData[section.name][field.name]?.type === 'application/pdf'"
+                 class="pdf-preview">
+              <span>{{ formData[section.name][field.name]?.name }}</span>
+              <a [href]="formData[section.name][field.name]?.content" download>📄 Télécharger</a>
+            </div>
+          </div>
+        </ng-container>
+
+        <!-- Section RÉPÉTABLE -->
+        <ng-container *ngIf="section.repeatable">
+          <button type="button" class="add-btn" (click)="addItem(section.name)">
+            + Ajouter {{ section.label }}
+          </button>
+
+          <div *ngFor="let item of formData[section.name]; let i = index" class="repeatable-item">
+            <div *ngFor="let field of section.fields" class="field">
+              <label>{{ field.label }}</label>
+
+              <!-- Champ texte/email -->
+              <input *ngIf="field.type === 'text' || field.type === 'email'"
+                     [type]="field.type"
+                     [(ngModel)]="formData[section.name][i][field.name]"
+                     [name]="section.name + '_' + i + '_' + field.name">
+
+              <!-- Champ textarea -->
+              <textarea *ngIf="field.type === 'textarea'"
+                        [(ngModel)]="formData[section.name][i][field.name]"
+                        [name]="section.name + '_' + i + '_' + field.name"></textarea>
+
+              <!-- Champ fichier -->
+              <input *ngIf="field.type === 'file'"
+                     type="file"
+                     accept="image/*,.pdf"
+                     (change)="onFileChange($event, section.name, field.name, i)">
+
+              <!-- Prévisualisation image -->
+              <img *ngIf="formData[section.name][i][field.name]?.type?.startsWith('image/')"
+                   [src]="formData[section.name][i][field.name]?.content"
+                   alt="Aperçu"
+                   style="max-width: 150px; margin-top: 10px; border-radius: 8px;">
+
+              <!-- Aperçu PDF -->
+              <div *ngIf="formData[section.name][i][field.name]?.type === 'application/pdf'"
+                   class="pdf-preview">
+                <span>{{ formData[section.name][i][field.name]?.name }}</span>
+                <a [href]="formData[section.name][i][field.name]?.content" download>📄 Télécharger</a>
+              </div>
+            </div>
+
+            <button type="button" class="remove-btn" (click)="removeItem(section.name, i)">
+              Supprimer {{ section.label }}
+            </button>
+          </div>
+        </ng-container>
+      </div>
+    </div>
+
+    <button type="submit">Voir mon portfolio</button>
+  </form>
+</div>
+

@@ -22,33 +22,49 @@
   <div class="portfolio-content">
     <!-- Section Accueil -->
     <header id="accueil">
-      <img *ngIf="data?.accueil?.photo?.content" 
-           [src]="data.accueil.photo.content" 
-           alt="Photo de profil">
-      <h1>{{ data?.accueil?.firstName }} {{ data?.accueil?.lastName }}</h1>
-      <p>{{ data?.accueil?.objective }}</p>
-      <p class="bio">{{ data?.accueil?.bio }}</p>
-      <p class="location">{{ data?.accueil?.locations }}</p>
+      <div class="header-content">
+        <div class="profile-section">
+          <img *ngIf="data?.accueil?.photo?.content" 
+               [src]="data?.accueil?.photo?.content" 
+               alt="Photo de profil"
+               class="profile-image">
+          <h1>{{data?.accueil?.firstName}} {{data?.accueil?.lastName}}</h1>
+        </div>
+        
+        <div class="intro-section">
+          <h2 class="objective">{{data?.accueil?.objective}}</h2>
+          <p class="bio">{{data?.accueil?.bio}}</p>
+          <p class="location" *ngIf="data?.accueil?.locations">
+            <i class="fas fa-map-marker-alt"></i> {{data?.accueil?.locations}}
+          </p>
+        </div>
+      </div>
     </header>
 
-    <!-- Section Formation -->
-    <section id="formations" *ngIf="data?.formation?.length">
+    <!-- Section Formations -->
+    <section id="formations" *ngIf="data?.formation">
       <h2>Formations</h2>
-      <div class="formation-item" *ngFor="let formation of data.formation">
-        <h3>{{ formation.degree }}</h3>
-        <p class="date">{{ formation.dates }}</p>
-        <p>{{ formation.description }}</p>
+      <div class="formations-container">
+        <div class="formation-item" *ngFor="let formation of data?.formation">
+          <h3>{{formation.degree}}</h3>
+          <p class="date">{{formation.dates}}</p>
+          <p class="description">{{formation.description}}</p>
+        </div>
       </div>
     </section>
 
     <!-- Section Expériences -->
-    <section id="experiences" *ngIf="data?.experience?.length">
+    <section id="experiences" *ngIf="data?.experience">
       <h2>Expériences</h2>
-      <div class="experience-item" *ngFor="let exp of data.experience">
-        <h3>{{ exp.jobTitle }}</h3>
-        <h4>{{ exp.company }}</h4>
-        <p class="date">{{ exp.dates }}</p>
-        <p>{{ exp.description }}</p>
+      <div class="experiences-container">
+        <div class="experience-item" *ngFor="let exp of data?.experience">
+          <div class="experience-header">
+            <h3>{{exp.jobTitle}}</h3>
+            <h4>{{exp.company}}</h4>
+            <p class="date">{{exp.dates}}</p>
+          </div>
+          <p class="description">{{exp.description}}</p>
+        </div>
       </div>
     </section>
 

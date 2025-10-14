@@ -1,4 +1,16 @@
 <div class="classic-template">
+  <nav class="sticky-navbar" *ngIf="sections.length">
+    <ul>
+      <li *ngFor="let section of sections"
+          [class.active]="activeSection === section.id"
+          (click)="scrollToSection(section.id)">
+        {{ section.label }}
+      </li>
+    </ul>
+  </nav>
+
+  <div class="preview-container" [innerHTML]="templateHtml"></div>
+
   <header>
     <img *ngIf="{{ photo }}" src="{{ photo }}" alt="Photo de profil" style="width:120px; border-radius:50%">
     <h1>{{ firstName }} {{ lastName }}</h1>

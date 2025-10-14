@@ -1,9 +1,11 @@
 <div class="classic">
-  <img *ngIf="data.photo" [src]="data.photo" alt="photo" />
-  <h1>{{ data.firstName }} {{ data.lastName }}</h1>
-  <p>{{ data.objective }}</p>
+  <header id="accueil">
+    <img *ngIf="data.photo" [src]="data.photo" alt="photo" />
+    <h1>{{ data.firstName }} {{ data.lastName }}</h1>
+    <p>{{ data.objective }}</p>
+  </header>
 
-  <section *ngIf="data.formation?.length">
+  <section id="formations" *ngIf="data.formation?.length">
     <h2>Formations</h2>
     <div *ngFor="let f of data.formation">
       <p><b>{{ f.degree }}</b> - {{ f.dates }}</p>
@@ -11,11 +13,21 @@
     </div>
   </section>
 
-  <section *ngIf="data.experience?.length">
+  <section id="experiences" *ngIf="data.experience?.length">
     <h2>Expériences</h2>
     <div *ngFor="let e of data.experience">
       <p><b>{{ e.jobTitle }}</b> - {{ e.company }} ({{ e.dates }})</p>
       <p>{{ e.description }}</p>
+    </div>
+  </section>
+
+  <section id="competences" *ngIf="data.competences?.length">
+    <h2>Compétences</h2>
+    <div class="competences-grid">
+      <div class="competence-card" *ngFor="let c of data.competences">
+        <h3>{{ c.name }}</h3>
+        <p>{{ c.description }}</p>
+      </div>
     </div>
   </section>
 </div>

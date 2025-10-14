@@ -1,36 +1,84 @@
-
-<div class="preview-container">
-  <!-- NAVBAR -->
+<div class="classic-template">
+  <!-- Navbar fixe -->
   <nav class="portfolio-nav" [class.scrolled]="isScrolled">
     <div class="nav-content">
-      <div class="nav-logo">Portfolio</div>
-
-      <button class="mobile-toggle" (click)="toggleMobileMenu()">
-        ☰
-      </button>
-
+      <div class="nav-logo">Mon Portfolio</div>
       <ul class="nav-links" [class.mobile-open]="mobileMenuOpen">
-        <li><a href="#home" (click)="scrollToSection('home')">Accueil</a></li>
-        <li><a href="#formation" (click)="scrollToSection('formation')">Formation</a></li>
-        <li><a href="#experience" (click)="scrollToSection('experience')">Expériences</a></li>
-        <li><a href="#competences" (click)="scrollToSection('competences')">Compétences</a></li>
+        <li *ngFor="let section of sections" 
+            [class.active]="activeSection === section.id"
+            (click)="scrollToSection(section.id)">
+          {{ section.label }}
+        </li>
       </ul>
-
-      <div class="nav-actions" [class.mobile-open]="mobileMenuOpen">
-        <button class="btn-edit" (click)="goBackToEdit()">✏️ Modifier</button>
-        <button class="btn-publish" (click)="publish()">🚀 Publier</button>
+      <div class="nav-actions">
+        <button class="btn-edit" (click)="goBackToEdit()">Modifier</button>
+        <button class="btn-publish" (click)="publish()">Publier</button>
       </div>
+      <button class="mobile-toggle" (click)="toggleMobileMenu()">☰</button>
     </div>
   </nav>
 
-  <!-- CONTENU DU PORTFOLIO -->
-  <div class="portfolio-content" [innerHTML]="renderedHtml"></div>
-</div>
-<div class="preview">
-  <h1>Mon Portfolio</h1>
-  <div [innerHTML]="templateHtml"></div>
-  <classic *ngIf="template === 'classic'" [data]="data"></classic>
-  <img *ngIf="data.photo" [src]="data.photo" alt="photo">
-  <a *ngIf="data.certificat" [href]="data.certificat" target="_blank">Voir le certificat</a>
+  <!-- Contenu du portfolio -->
+  <div class="portfolio-content">
+    <!-- Section Accueil -->
+    <header id="accueil">
+      <img *ngIf="data?.accueil?.photo?.content" 
+           [src]="data.accueil.photo.content" 
+           alt="Photo de profil">
+      <h1>{{ data?.accueil?.firstName }} {{ data?.accueil?.lastName }}</h1>
+      <p>{{ data?.accueil?.objective }}</p>
+      <p class="bio">{{ data?.accueil?.bio }}</p>
+      <p class="location">{{ data?.accueil?.locations }}</p>
+    </header>
 
+    <!-- Section Formation -->
+    <section id="formations" *ngIf="data?.formation?.length">
+      <h2>Formations</h2>
+      <div class="formation-item" *ngFor="let formation of data.formation">
+        <h3>{{ formation.degree }}</h3>
+        <p class="date">{{ formation.dates }}</p>
+        <p>{{ formation.description }}</p>
+      </div>
+    </section>
+
+    <!-- Section Expériences -->
+    <section id="experiences" *ngIf="data?.experience?.length">
+      <h2>Expériences</h2>
+      <div class="experience-item" *ngFor="let exp of data.experience">
+        <h3>{{ exp.jobTitle }}</h3>
+        <h4>{{ exp.company }}</h4>
+        <p class="date">{{ exp.dates }}</p>
+        <p>{{ exp.description }}</p>
+      </div>
+    </section>
+
+    <!-- Section Compétences -->
+    <section id="competences" *ngIf="data?.competences">
+      <h2>Compétences</h2>
+      <div class="competences-grid">
+        <div class="competence-card">
+          <h3>Soft Skills</h3>
+          <p>{{ data.competences.softSkills }}</p>
+        </div>
+        <div class="competence-card">
+          <h3>Hard Skills</h3>
+          <p>{{ data.competences.hardSkills }}</p>
+        </div>
+        <div class="competence-card">
+          <h3>Langues</h3>
+          <p>{{ data.competences.languages }}</p>
+        </div>
+        <div class="competence-card" *ngIf="data.competences.certificates">
+          <h3>Certificats</h3>
+          <p>{{ data.competences.certificates }}</p>
+          <a *ngIf="data.competences.certificateFile?.content" 
+             [href]="data.competences.certificateFile.content" 
+             target="_blank"
+             class="certificate-link">
+            Voir le certificat
+          </a>
+        </div>
+      </div>
+    </section>
+  </div>
 </div>

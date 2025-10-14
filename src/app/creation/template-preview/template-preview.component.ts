@@ -1,4 +1,4 @@
-import { Component, OnInit, Renderer2 } from '@angular/core';
+import { Component, OnInit, Renderer2, HostListener } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
@@ -7,53 +7,75 @@ import { CommonModule } from '@angular/common';
   selector: 'app-template-preview',
   standalone: true,
   imports: [CommonModule],
-  template: `
-    <div class="preview-container" [innerHTML]="templateHtml"></div>
-  `,
+  templateUrl: './template-preview.component.html',
   styleUrls: ['./template-preview.component.scss']
 })
 export class TemplatePreviewComponent implements OnInit {
   data: any;
-  templateHtml: string = '';
   template: string = '';
 
+  isScrolled: boolean = false;
+  mobileMenuOpen: boolean = false;
+
+  sections = [
+    { id: 'accueil', label: 'Accueil' },
+    { id: 'formations', label: 'Formations' },
+    { id: 'experiences', label: 'Expériences' },
+    { id: 'competences', label: 'Compétences' }
+  ];
+  activeSection: string = 'accueil';
+
   constructor(private router: Router, private http: HttpClient, private renderer: Renderer2) {}
+
+  @HostListener('window:scroll', [])
+  onWindowScroll() {
+    this.isScrolled = window.pageYOffset > 50;
+
+    for (const section of this.sections) {
+      const element = document.getElementById(section.id);
+      if (element) {
+        const rect = element.getBoundingClientRect();
+        if (rect.top <= 100 && rect.bottom > 100) {
+          this.activeSection = section.id;
+          break;
+        }
+      }
+    }
+  }
 
   ngOnInit(): void {
     const state = history.state;
     this.template = state.template;
     this.data = state.data;
 
+    // Charger le CSS du template pour garder le style
     if (this.template) {
-      this.http.get(`assets/templates/${this.template}/template.html`, { responseType: 'text' })
-        .subscribe(html => {
-          this.templateHtml = this.interpolate(html, this.data);
-
-          const link = this.renderer.createElement('link');
-          link.rel = 'stylesheet';
-          link.href = `assets/templates/${this.template}/style.css`;
-          this.renderer.appendChild(document.head, link);
-        });
+      const link = this.renderer.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = `assets/templates/${this.template}/style.css`;
+      this.renderer.appendChild(document.head, link);
     }
   }
 
-  interpolate(html: string, data: any): string {
-    html = html.replace(/\{\{\s*([\w.]+)\s*\}\}/g, (_, path) => {
-      const keys = path.split('.');
-      let value = data;
-      for (let key of keys) value = value?.[key];
-      return value ?? '';
-    });
-
-    html = html.replace(/\{\{#each (\w+)\}\}([\s\S]*?)\{\{\/each\}\}/g, (_, arrayName, innerHtml) => {
-      const arr = data[arrayName];
-      if (!Array.isArray(arr)) return '';
-      return arr.map(item => this.interpolate(innerHtml, item)).join('');
-    });
-
-    return html;
+  scrollToSection(sectionId: string) {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      const yOffset = -80;
+      const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
+      window.scrollTo({ top: y, behavior: 'smooth' });
+    }
+    this.mobileMenuOpen = false;
   }
 
+  toggleMobileMenu() {
+    this.mobileMenuOpen = !this.mobileMenuOpen;
+  }
+
+  goBackToEdit() {
+    this.router.navigate(['/creation/editor', this.template]);
+  }
+
+  publish() {
+    alert('Fonctionnalité de publication à venir !');
+  }
 }
-
-

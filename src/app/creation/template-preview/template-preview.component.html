@@ -1,4 +1,8 @@
 <div class="preview">
   <h1>Mon Portfolio</h1>
   <div [innerHTML]="templateHtml"></div>
+  <classic *ngIf="template === 'classic'" [data]="data"></classic>
+  <img *ngIf="data.photo" [src]="data.photo" alt="photo">
+  <a *ngIf="data.certificat" [href]="data.certificat" target="_blank">Voir le certificat</a>
+
 </div>

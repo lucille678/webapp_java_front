@@ -1,0 +1,22 @@
+<div class="classic">
+  <img *ngIf="data.photo" [src]="data.photo" alt="photo" />
+  <h1>{{ data.firstName }} {{ data.lastName }}</h1>
+  <p>{{ data.objective }}</p>
+
+  <section *ngIf="data.formation?.length">
+    <h2>Formations</h2>
+    <div *ngFor="let f of data.formation">
+      <p><b>{{ f.degree }}</b> - {{ f.dates }}</p>
+      <p>{{ f.description }}</p>
+    </div>
+  </section>
+
+  <section *ngIf="data.experience?.length">
+    <h2>Expériences</h2>
+    <div *ngFor="let e of data.experience">
+      <p><b>{{ e.jobTitle }}</b> - {{ e.company }} ({{ e.dates }})</p>
+      <p>{{ e.description }}</p>
+    </div>
+  </section>
+</div>
+

@@ -9,7 +9,8 @@
         { "name": "lastName", "label": "Nom", "type": "text" },
         { "name": "objective", "label": "Ce que je recherche", "type": "textarea" },
         { "name": "bio", "label": "Présentation", "type": "textarea" },
-        { "name": "locations", "label": "Lieux de mobilité", "type": "text" }
+        { "name": "locations", "label": "Lieux de mobilité", "type": "text" },
+        { "name": "photo", "label": "Photo de profil", "type": "file"}
       ]
     },
     {
@@ -41,7 +42,9 @@
         { "name": "hardSkills", "label": "Hard Skills", "type": "textarea" },
         { "name": "languages", "label": "Langues", "type": "textarea" },
         { "name": "certificates", "label": "Certificats", "type": "textarea" },
-        { "name": "extra", "label": "Autres rubriques", "type": "text", "repeatable": true }
+        { "name": "extra", "label": "Autres rubriques", "type": "text", "repeatable": true },
+        { "name": "certificateFile", "label": "Uploader un certificat (PDF ou image)", "type": "file"}
+
       ]
     }
   ]

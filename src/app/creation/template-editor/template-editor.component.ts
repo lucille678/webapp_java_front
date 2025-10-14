@@ -21,16 +21,29 @@ export class TemplateEditorComponent implements OnInit {
 
   constructor(private route: ActivatedRoute, private http: HttpClient, private router: Router) {}
 
-  onFileChange(event: Event, fieldName: string) {
+  onFileChange(event: any, sectionName: string, fieldName: string, index?: number) {
     const input = event.target as HTMLInputElement;
-    if (input?.files && input.files.length > 0) {
-      const file = input.files[0];
-      const reader = new FileReader();
-      reader.onload = () => {
-        this.formData[fieldName] = reader.result;
+    if (!input.files || input.files.length === 0) return;
+
+    const file = input.files[0];
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      const fileData = {
+        name: file.name,
+        type: file.type,
+        content: reader.result // base64
       };
-      reader.readAsDataURL(file);
-    }
+
+      if (index !== undefined) {
+        this.formData[sectionName][index][fieldName] = fileData;
+      } else {
+        this.formData[sectionName][fieldName] = fileData;
+      }
+    };
+
+    // On lit le fichier comme Base64 (pour preview image ou pdf)
+    reader.readAsDataURL(file);
   }
 
   ngOnInit(): void {
@@ -47,6 +60,10 @@ export class TemplateEditorComponent implements OnInit {
             this.formData[section.name] = {};
           }
         });
+        const savedData = localStorage.getItem(`formData_${this.templateName}`);
+        if (savedData) {
+          this.formData = JSON.parse(savedData);
+        }
       });
     }
   }
@@ -64,9 +81,15 @@ export class TemplateEditorComponent implements OnInit {
 
 
   onSubmit() {
-    console.log(this.formData);
-    this.router.navigate(['/preview'], { state: { data: this.formData, template: this.templateName } });
+    // Sauvegarde locale
+    localStorage.setItem(`formData_${this.templateName}`, JSON.stringify(this.formData));
+
+    this.router.navigate(['/preview'], {
+      state: { data: this.formData, template: this.templateName }
+    });
   }
+
+
 }
 
 

@@ -1,0 +1,46 @@
+<div class="creative">
+  <header id="accueil">
+    <div class="profile-content">
+      <img *ngIf="data.photo" [src]="data.photo" alt="photo" class="profile-image" />
+    </div>
+    <div class="intro-content">
+      <h1>{{ data.firstName }} {{ data.lastName }}</h1>
+      <p class="objective">{{ data.objective }}</p>
+      <p class="bio">{{ data.bio }}</p>
+      <p class="location">{{ data.location }}</p>
+    </div>
+  </header>
+
+  <section id="formations" *ngIf="data.formation?.length">
+    <h2>Formations</h2>
+    <div class="grid-container">
+      <div class="item" *ngFor="let f of data.formation">
+        <h3>{{ f.degree }}</h3>
+        <p class="date">{{ f.dates }}</p>
+        <p>{{ f.description }}</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="experiences" *ngIf="data.experience?.length">
+    <h2>Expériences</h2>
+    <div class="grid-container">
+      <div class="item" *ngFor="let e of data.experience">
+        <h3>{{ e.jobTitle }}</h3>
+        <h4>{{ e.company }}</h4>
+        <p class="date">{{ e.dates }}</p>
+        <p>{{ e.description }}</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="competences" *ngIf="data.competences?.length">
+    <h2>Compétences</h2>
+    <div class="competences-grid">
+      <div class="competence-card" *ngFor="let c of data.competences">
+        <h3>{{ c.name }}</h3>
+        <p>{{ c.description }}</p>
+      </div>
+    </div>
+  </section>
+</div>

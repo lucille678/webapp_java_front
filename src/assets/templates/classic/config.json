@@ -19,7 +19,7 @@
       "repeatable": true,
       "fields": [
         { "name": "degree", "label": "Nom de la formation", "type": "text" },
-        { "name": "dates", "label": "Dates", "type": "text" },
+        { "name": "dates", "label": "Période", "type": "date-range" },
         { "name": "description", "label": "Description", "type": "textarea" }
       ]
     },
@@ -30,7 +30,7 @@
       "fields": [
         { "name": "jobTitle", "label": "Poste", "type": "text" },
         { "name": "company", "label": "Entreprise", "type": "text" },
-        { "name": "dates", "label": "Dates", "type": "text" },
+        { "name": "dates", "label": "Période", "type": "date-range" },
         { "name": "description", "label": "Description", "type": "textarea" }
       ]
     },

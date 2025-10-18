@@ -19,11 +19,11 @@ header {
   justify-content: center;
   align-items: center;
   text-align: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(to bottom, #2c3e50, #2c3e50);
   color: white;
   padding: 2rem;
   position: relative;
-  margin-top: -60px; /* Compenser le padding-top du content */
+  margin-top: -60px;
 }
 
 header img {
@@ -63,40 +63,60 @@ header .location {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2rem;
+  gap: 3rem;
+  padding: 4rem 2rem;
 }
 
 .profile-section {
   text-align: center;
+  animation: fadeIn 1s ease;
 }
 
 .profile-image {
-  width: 200px;
-  height: 200px;
+  width: 220px;
+  height: 220px;
   border-radius: 50%;
   object-fit: cover;
-  border: 5px solid white;
+  border: 5px solid rgba(255, 255, 255, 0.3);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-  margin-bottom: 1.5rem;
+  margin-bottom: 2rem;
+  transition: transform 0.3s ease;
+}
+
+.profile-image:hover {
+  transform: scale(1.05);
+}
+
+.profile-section h1 {
+  font-size: 3.5rem;
+  margin-bottom: 1rem;
+  font-weight: 700;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+  background: linear-gradient(120deg, #ffffff 0%, #f0f0f0 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .intro-section {
   text-align: center;
   max-width: 800px;
+  animation: slideUp 1s ease;
 }
 
 .objective {
-  font-size: 1.8rem;
+  font-size: 2rem;
   color: white;
-  margin-bottom: 1.5rem;
+  margin-bottom: 2rem;
   font-weight: 600;
+  line-height: 1.4;
 }
 
 .bio {
-  font-size: 1.2rem;
+  font-size: 1.3rem;
   line-height: 1.8;
   color: rgba(255, 255, 255, 0.9);
   margin-bottom: 2rem;
+  padding: 0 1rem;
 }
 
 .location {
@@ -106,6 +126,11 @@ header .location {
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.location i {
+  color: #e74c3c;
 }
 
 /* SECTIONS */
@@ -118,7 +143,7 @@ section {
 
 section h2 {
   font-size: 2.5rem;
-  color: #667eea;
+  color: #2c3e50;
   margin-bottom: 3rem;
   text-align: center;
   position: relative;
@@ -132,18 +157,18 @@ section h2::after {
   left: 50%;
   transform: translateX(-50%);
   width: 80px;
-  height: 4px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  height: 3px;
+  background: #2c3e50;
   border-radius: 2px;
 }
 
 /* FORMATION */
 .formation-item {
-  background: #f8f9fa;
+  background: #ffffff;
   padding: 2rem;
   margin-bottom: 2rem;
-  border-radius: 12px;
-  border-left: 4px solid #667eea;
+  border-radius: 8px;
+  border-left: 4px solid #2c3e50;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
@@ -166,9 +191,17 @@ section h2::after {
 }
 
 .formation-item .date {
-  color: #667eea;
+  color: #2c3e50;
   font-weight: 600;
   font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.formation-item .date::before {
+  content: '🗓';
+  font-size: 1.1rem;
 }
 
 /* EXPÉRIENCES */
@@ -176,9 +209,9 @@ section h2::after {
   background: white;
   padding: 2.5rem;
   margin-bottom: 2.5rem;
-  border-radius: 12px;
+  border-radius: 8px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-  border-top: 3px solid #764ba2;
+  border-left: 4px solid #2c3e50;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
@@ -187,8 +220,12 @@ section h2::after {
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
 }
 
+.experience-header {
+  margin-bottom: 1.5rem;
+}
+
 .experience-item h3 {
-  color: #764ba2;
+  color: #2c3e50;
   font-size: 1.6rem;
   margin-bottom: 0.5rem;
 }
@@ -207,9 +244,12 @@ section h2::after {
 }
 
 .experience-item .date {
-  color: #667eea;
+  color: #2c3e50;
   font-weight: 600;
   font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 /* COMPÉTENCES */
@@ -223,8 +263,9 @@ section h2::after {
 .competence-card {
   background: white;
   padding: 2rem;
-  border-radius: 12px;
+  border-radius: 8px;
   box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+  border-left: 4px solid #2c3e50;
   transition: transform 0.3s ease;
 }
 
@@ -233,7 +274,7 @@ section h2::after {
 }
 
 .competence-card h3 {
-  color: #667eea;
+  color: #2c3e50;
   font-size: 1.3rem;
   margin-bottom: 1.5rem;
   text-align: center;
@@ -262,8 +303,8 @@ section:nth-child(odd) {
   left: 0;
   right: 0;
   z-index: 1000;
-  background: white;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  background: #333333;  /* Changement de la couleur pour un gris foncé plus professionnel */
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
   padding: 1rem 2rem;
 }
 
@@ -280,20 +321,50 @@ section:nth-child(odd) {
   margin: 0 auto;
 }
 
-.nav-links {
-  display: flex;
-  gap: 2rem;
-  list-style: none;
+/* Style des boutons dans la navbar */
+.nav-actions button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
+.btn-edit {
+  background: transparent;
+  color: white;
+  border: 1px solid white !important;
+  margin-right: 10px;
+}
+
+.btn-edit:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.btn-publish {
+  background: #4CAF50;
+  color: white;
+}
+
+.btn-publish:hover {
+  background: #45a049;
+}
+
+/* Style des liens de navigation */
 .nav-links li {
-  cursor: pointer;
-  color: #333;
-  font-weight: 500;
+  color: #ffffff;
+  opacity: 0.8;
+  transition: opacity 0.3s ease;
 }
 
 .nav-links li:hover {
-  color: #667eea;
+  opacity: 1;
+}
+
+.nav-links li.active {
+  opacity: 1;
+  font-weight: 600;
 }
 
 /* RESPONSIVE */
@@ -316,5 +387,39 @@ section:nth-child(odd) {
 
   .competences-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+.date-range {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.checkbox-field {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.checkbox-field input[type="checkbox"] {
+  width: auto;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }

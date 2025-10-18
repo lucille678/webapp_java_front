@@ -72,10 +72,28 @@ export class TemplatePreviewComponent implements OnInit {
   }
 
   goBackToEdit() {
-    this.router.navigate(['/creation/editor', this.template]);
+    this.router.navigate(['/creation/template-editor', this.template], { 
+      state: { data: this.data }
+    });
   }
 
   publish() {
     alert('Fonctionnalité de publication à venir !');
+  }
+
+  formatDateRange(startDate: string, endDate: string): string {
+    const formatDate = (date: string) => {
+      if (!date) return '';
+      const d = new Date(date);
+      return d.toLocaleDateString('fr-FR', { 
+        month: 'long', 
+        year: 'numeric'
+      });
+    };
+
+    const start = formatDate(startDate);
+    const end = endDate ? formatDate(endDate) : 'Aujourd\'hui';
+
+    return `${start} - ${end}`;
   }
 }

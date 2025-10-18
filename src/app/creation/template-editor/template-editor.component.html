@@ -49,49 +49,81 @@
 
         <!-- Section RÉPÉTABLE -->
         <ng-container *ngIf="section.repeatable">
-          <button type="button" class="add-btn" (click)="addItem(section.name)">
-            + Ajouter {{ section.label }}
-          </button>
-
           <div *ngFor="let item of formData[section.name]; let i = index" class="repeatable-item">
             <div *ngFor="let field of section.fields" class="field">
-              <label>{{ field.label }}</label>
+              <!-- Champs normaux -->
+              <ng-container *ngIf="field.type !== 'file'">
+                <label>{{ field.label }}</label>
+                
+                <!-- Champs date pour Formation et Expérience -->
+                <ng-container *ngIf="section.name === 'formation' || section.name === 'experience'">
+                  <div class="date-range" *ngIf="field.name === 'dates'">
+                    <div class="field">
+                      <label>Date de début</label>
+                      <input type="date" 
+                             [(ngModel)]="item.startDate"
+                             [name]="section.name + '_' + i + '_startDate'">
+                    </div>
+                    <div class="field">
+                      <label>Date de fin</label>
+                      <input type="date" 
+                             [(ngModel)]="item.endDate"
+                             [name]="section.name + '_' + i + '_endDate'">
+                      <div class="checkbox-field">
+                        <input type="checkbox" 
+                               [(ngModel)]="item.current"
+                               [name]="section.name + '_' + i + '_current'">
+                        <label>En cours</label>
+                      </div>
+                    </div>
+                  </div>
+                </ng-container>
 
-              <!-- Champ texte/email -->
-              <input *ngIf="field.type === 'text' || field.type === 'email'"
-                     [type]="field.type"
-                     [(ngModel)]="formData[section.name][i][field.name]"
-                     [name]="section.name + '_' + i + '_' + field.name">
+                <!-- Autres champs -->
+                <ng-container *ngIf="field.name !== 'dates'">
+                  <input *ngIf="field.type === 'text'" 
+                         type="text"
+                         [(ngModel)]="item[field.name]"
+                         [name]="section.name + '_' + i + '_' + field.name">
+                  
+                  <textarea *ngIf="field.type === 'textarea'"
+                           [(ngModel)]="item[field.name]"
+                           [name]="section.name + '_' + i + '_' + field.name">
+                  </textarea>
+                </ng-container>
+              </ng-container>
 
-              <!-- Champ textarea -->
-              <textarea *ngIf="field.type === 'textarea'"
-                        [(ngModel)]="formData[section.name][i][field.name]"
-                        [name]="section.name + '_' + i + '_' + field.name"></textarea>
+              <!-- Champs fichier -->
+              <ng-container *ngIf="field.type === 'file'">
+                <!-- Champ fichier -->
+                <input *ngIf="field.type === 'file'"
+                       type="file"
+                       accept="image/*,.pdf"
+                       (change)="onFileChange($event, section.name, field.name, i)">
 
-              <!-- Champ fichier -->
-              <input *ngIf="field.type === 'file'"
-                     type="file"
-                     accept="image/*,.pdf"
-                     (change)="onFileChange($event, section.name, field.name, i)">
+                <!-- Prévisualisation image -->
+                <img *ngIf="formData[section.name][i][field.name]?.type?.startsWith('image/')"
+                     [src]="formData[section.name][i][field.name]?.content"
+                     alt="Aperçu"
+                     style="max-width: 150px; margin-top: 10px; border-radius: 8px;">
 
-              <!-- Prévisualisation image -->
-              <img *ngIf="formData[section.name][i][field.name]?.type?.startsWith('image/')"
-                   [src]="formData[section.name][i][field.name]?.content"
-                   alt="Aperçu"
-                   style="max-width: 150px; margin-top: 10px; border-radius: 8px;">
-
-              <!-- Aperçu PDF -->
-              <div *ngIf="formData[section.name][i][field.name]?.type === 'application/pdf'"
-                   class="pdf-preview">
-                <span>{{ formData[section.name][i][field.name]?.name }}</span>
-                <a [href]="formData[section.name][i][field.name]?.content" download>📄 Télécharger</a>
-              </div>
+                <!-- Aperçu PDF -->
+                <div *ngIf="formData[section.name][i][field.name]?.type === 'application/pdf'"
+                     class="pdf-preview">
+                  <span>{{ formData[section.name][i][field.name]?.name }}</span>
+                  <a [href]="formData[section.name][i][field.name]?.content" download>📄 Télécharger</a>
+                </div>
+              </ng-container>
             </div>
 
             <button type="button" class="remove-btn" (click)="removeItem(section.name, i)">
-              Supprimer {{ section.label }}
+              Supprimer
             </button>
           </div>
+
+          <button type="button" class="add-btn" (click)="addItem(section.name)">
+            + Ajouter {{ section.label }}
+          </button>
         </ng-container>
       </div>
     </div>

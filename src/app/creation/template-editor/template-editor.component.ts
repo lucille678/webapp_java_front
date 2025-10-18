@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
-import {FormsModule} from "@angular/forms";
+import { FormsModule } from "@angular/forms";
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -71,7 +71,15 @@ export class TemplateEditorComponent implements OnInit {
   addItem(sectionName: string) {
     const sectionConfig = this.config.sections.find((s: any) => s.name === sectionName);
     const newItem: any = {};
-    sectionConfig.fields.forEach((f: any) => newItem[f.name] = '');
+    sectionConfig.fields.forEach((f: any) => {
+      if (f.type === 'date-range') {
+        newItem.startDate = '';
+        newItem.endDate = '';
+        newItem.current = false;
+      } else {
+        newItem[f.name] = '';
+      }
+    });
     this.formData[sectionName].push(newItem);
   }
 

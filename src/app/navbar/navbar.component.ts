@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Link } from 'models/links.model';
+import { Link } from '../models/links.model';
 import { AuthService } from '../services/auth.service';
 import { Router } from '@angular/router';
 

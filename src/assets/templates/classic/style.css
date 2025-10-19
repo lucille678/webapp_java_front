@@ -263,8 +263,7 @@ section h2::after {
   background: white;
   padding: 2rem;
   border-radius: 8px;
-  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
-  border-left: 4px solid #2c3e50;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
   transition: transform 0.3s ease;
 }
 
@@ -273,17 +272,14 @@ section h2::after {
 }
 
 .competence-card h3 {
-  color: #2c3e50;
+  margin-bottom: 1rem;
+  color: #333;
   font-size: 1.3rem;
-  margin-bottom: 1.5rem;
-  text-align: center;
 }
 
 .competence-card p {
-  color: #555;
-  line-height: 1.8;
-  text-align: left;
-  white-space: pre-line;
+  color: #666;
+  line-height: 1.6;
 }
 
 /* ALTERNANCE COULEURS SECTIONS */
@@ -364,6 +360,40 @@ section:nth-child(odd) {
 .nav-links li.active {
   opacity: 1;
   font-weight: 600;
+}
+
+/* Style spécifique pour les certificats */
+.certificates-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.certificate-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  background: rgba(0, 0, 0, 0.03);
+  border-radius: 6px;
+}
+
+.certificate-name {
+  font-weight: 500;
+  color: #333;
+}
+
+.certificate-link {
+  color: #4a90e2;
+  text-decoration: none;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.certificate-link:hover {
+  text-decoration: underline;
 }
 
 /* RESPONSIVE */

@@ -225,27 +225,27 @@
 }
 
 .competence-card {
-  background: #0a0a0a;
+  background: white;
   padding: 2rem;
-  border-radius: 20px;
-  border: 1px solid #333;
-  transition: all 0.3s ease;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s ease;
 }
 
 .competence-card:hover {
-  transform: translateY(-10px);
+  transform: translateY(-5px);
   border-color: #4ECDC4;
 }
 
 .competence-card h3 {
-  color: #FF6B6B;
+  margin-bottom: 1rem;
+  color: #333;
   font-size: 1.3rem;
-  margin-bottom: 1.5rem;
   text-align: center;
 }
 
 .competence-card p {
-  color: #777;
+  color: #666;
   line-height: 1.6;
 }
 

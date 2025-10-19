@@ -25,18 +25,16 @@
       <div class="header-content">
         <div class="profile-section">
           <img *ngIf="data?.accueil?.photo?.content" 
-               [src]="data?.accueil?.photo?.content" 
+               [src]="data.accueil.photo.content" 
                alt="Photo de profil"
                class="profile-image">
           <h1>{{data?.accueil?.firstName}} {{data?.accueil?.lastName}}</h1>
         </div>
         
         <div class="intro-section">
-          <h2 class="objective">{{data?.accueil?.objective}}</h2>
+          <p class="objective">{{data?.accueil?.objective}}</p>
           <p class="bio">{{data?.accueil?.bio}}</p>
-          <p class="location" *ngIf="data?.accueil?.locations">
-            <i class="fas fa-map-marker-alt"></i> {{data?.accueil?.locations}}
-          </p>
+          <p class="location">{{data?.accueil?.locations}}</p>
         </div>
       </div>
     </header>
@@ -47,8 +45,8 @@
       <div class="formations-container">
         <div class="formation-item" *ngFor="let formation of data?.formation">
           <h3>{{formation.degree}}</h3>
-          <p class="date">{{formatDateRange(formation.startDate, formation.endDate)}}</p>
-          <p class="description">{{formation.description}}</p>
+          <p class="date">{{formation.dates}}</p>
+          <p>{{formation.description}}</p>
         </div>
       </div>
     </section>
@@ -58,12 +56,10 @@
       <h2>Expériences</h2>
       <div class="experiences-container">
         <div class="experience-item" *ngFor="let exp of data?.experience">
-          <div class="experience-header">
-            <h3>{{exp.jobTitle}}</h3>
-            <h4>{{exp.company}}</h4>
-            <p class="date">{{formatDateRange(exp.startDate, exp.endDate)}}</p>
-          </div>
-          <p class="description">{{exp.description}}</p>
+          <h3>{{exp.jobTitle}}</h3>
+          <h4>{{exp.company}}</h4>
+          <p class="date">{{exp.dates}}</p>
+          <p>{{exp.description}}</p>
         </div>
       </div>
     </section>
@@ -72,27 +68,40 @@
     <section id="competences" *ngIf="data?.competences">
       <h2>Compétences</h2>
       <div class="competences-grid">
-        <div class="competence-card">
+        <!-- Compétences standard -->
+        <div class="competence-card" *ngIf="data.competences.softSkills">
           <h3>Soft Skills</h3>
-          <p>{{ data.competences.softSkills }}</p>
+          <p>{{data.competences.softSkills}}</p>
         </div>
-        <div class="competence-card">
+        <div class="competence-card" *ngIf="data.competences.hardSkills">
           <h3>Hard Skills</h3>
-          <p>{{ data.competences.hardSkills }}</p>
+          <p>{{data.competences.hardSkills}}</p>
         </div>
-        <div class="competence-card">
+        <div class="competence-card" *ngIf="data.competences.languages">
           <h3>Langues</h3>
-          <p>{{ data.competences.languages }}</p>
+          <p>{{data.competences.languages}}</p>
         </div>
-        <div class="competence-card" *ngIf="data.competences.certificates">
+
+        <!-- Certificats -->
+        <div class="competence-card certificates" *ngIf="data.competences.certificates?.length">
           <h3>Certificats</h3>
-          <p>{{ data.competences.certificates }}</p>
-          <a *ngIf="data.competences.certificateFile?.content" 
-             [href]="data.competences.certificateFile.content" 
-             target="_blank"
-             class="certificate-link">
-            Voir le certificat
-          </a>
+          <div class="certificates-list">
+            <div class="certificate-item" *ngFor="let cert of data.competences.certificates">
+              <span class="certificate-name">{{cert.name}}</span>
+              <a *ngIf="cert.file?.content" 
+                 [href]="cert.file.content" 
+                 target="_blank"
+                 class="certificate-link">
+                 Voir le certificat <i class="fas fa-external-link-alt"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Catégories personnalisées -->
+        <div class="competence-card" *ngFor="let category of data.competences.customCategories">
+          <h3>{{category.name}}</h3>
+          <p>{{category.content}}</p>
         </div>
       </div>
     </section>

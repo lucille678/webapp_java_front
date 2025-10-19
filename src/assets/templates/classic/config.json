@@ -40,15 +40,7 @@
       "fields": [
         { "name": "softSkills", "label": "Soft Skills", "type": "textarea" },
         { "name": "hardSkills", "label": "Hard Skills", "type": "textarea" },
-        { "name": "languages", "label": "Langues", "type": "textarea" },
-        { "name": "certificates", "label": "Certificats", "type": "textarea" },
-        { "name": "certificateFile", "label": "Uploader un certificat (PDF ou image)", "type": "file" },
-        { 
-          "name": "customCategories",
-          "label": "Catégories personnalisées",
-          "type": "custom-category",
-          "repeatable": true
-        }
+        { "name": "languages", "label": "Langues", "type": "textarea" }
       ]
     }
   ]

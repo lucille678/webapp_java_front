@@ -47,24 +47,32 @@ export class TemplateEditorComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // Load config comme avant
     this.templateName = this.route.snapshot.paramMap.get('templateName');
     if (this.templateName) {
-      this.http.get(`assets/templates/${this.templateName}/config.json`).subscribe((data: any) => {
-        this.config = data;
-        // Initialiser formData
-        this.config.sections.forEach((section: any) => {
-          if (section.repeatable) {
-            this.formData[section.name] = [];
-          } else {
-            this.formData[section.name] = {};
-          }
+      this.http.get(`assets/templates/${this.templateName}/config.json`)
+        .subscribe({
+          next: (data: any) => {
+            this.config = data;
+            // Initialize formData structure
+            this.formData = {};
+            this.config.sections.forEach((section: any) => {
+              if (section.name === 'competences') {
+                this.formData[section.name] = {
+                  softSkills: '',
+                  hardSkills: '',
+                  languages: '',
+                  certificates: [],
+                  customCategories: []
+                };
+              } else if (section.repeatable) {
+                this.formData[section.name] = [];
+              } else {
+                this.formData[section.name] = {};
+              }
+            });
+          },
+          error: (error) => console.error('Error loading config:', error)
         });
-        const savedData = localStorage.getItem(`formData_${this.templateName}`);
-        if (savedData) {
-          this.formData = JSON.parse(savedData);
-        }
-      });
     }
   }
 
@@ -129,6 +137,42 @@ export class TemplateEditorComponent implements OnInit {
 
   removeCategory(index: number) {
     this.formData.competences.customCategories.splice(index, 1);
+  }
+
+  getCertificates() {
+    if (!this.formData.competences.certificates) {
+      this.formData.competences.certificates = [];
+    }
+    return this.formData.competences.certificates;
+  }
+
+  addCertificate() {
+    if (!Array.isArray(this.formData.competences.certificates)) {
+      this.formData.competences.certificates = [];
+    }
+    this.formData.competences.certificates.push({
+      name: '',
+      file: null
+    });
+  }
+
+  removeCertificate(index: number) {
+    this.formData.competences.certificates.splice(index, 1);
+  }
+
+  onCertificateFileChange(event: any, index: number) {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.formData.competences.certificates[index].file = {
+          name: file.name,
+          type: file.type,
+          content: reader.result
+        };
+      };
+      reader.readAsDataURL(file);
+    }
   }
 
   onSubmit() {

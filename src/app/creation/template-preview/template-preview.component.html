@@ -47,7 +47,7 @@
       <div class="formations-container">
         <div class="formation-item" *ngFor="let formation of data?.formation">
           <h3>{{formation.degree}}</h3>
-          <p class="date">{{formation.dates}}</p>
+          <p class="date">{{formatDateRange(formation.startDate, formation.endDate)}}</p>
           <p class="description">{{formation.description}}</p>
         </div>
       </div>
@@ -61,7 +61,7 @@
           <div class="experience-header">
             <h3>{{exp.jobTitle}}</h3>
             <h4>{{exp.company}}</h4>
-            <p class="date">{{exp.dates}}</p>
+            <p class="date">{{formatDateRange(exp.startDate, exp.endDate)}}</p>
           </div>
           <p class="description">{{exp.description}}</p>
         </div>

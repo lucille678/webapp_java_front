@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
-import {FormsModule} from "@angular/forms";
+import { FormsModule } from "@angular/forms";
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -71,7 +71,15 @@ export class TemplateEditorComponent implements OnInit {
   addItem(sectionName: string) {
     const sectionConfig = this.config.sections.find((s: any) => s.name === sectionName);
     const newItem: any = {};
-    sectionConfig.fields.forEach((f: any) => newItem[f.name] = '');
+    sectionConfig.fields.forEach((f: any) => {
+      if (f.type === 'date-range') {
+        newItem.startDate = '';
+        newItem.endDate = '';
+        newItem.current = false;
+      } else {
+        newItem[f.name] = '';
+      }
+    });
     this.formData[sectionName].push(newItem);
   }
 
@@ -79,6 +87,49 @@ export class TemplateEditorComponent implements OnInit {
     this.formData[sectionName].splice(index, 1);
   }
 
+  removeFile(sectionName: string, fieldName: string, index?: number) {
+    if (index !== undefined) {
+      this.formData[sectionName][index][fieldName] = null;
+    } else {
+      this.formData[sectionName][fieldName] = null;
+    }
+  }
+
+  getFieldValue(sectionName: string, fieldName: string, index?: number) {
+    if (index !== undefined) {
+      return this.formData[sectionName][index][fieldName];
+    }
+    return this.formData[sectionName][fieldName];
+  }
+
+  isImage(file: any) {
+    return file?.type?.startsWith('image/');
+  }
+
+  isPDF(file: any) {
+    return file?.type === 'application/pdf';
+  }
+
+  getCustomCategories() {
+    if (!this.formData.competences.customCategories) {
+      this.formData.competences.customCategories = [];
+    }
+    return this.formData.competences.customCategories;
+  }
+
+  addCategory() {
+    if (!this.formData.competences.customCategories) {
+      this.formData.competences.customCategories = [];
+    }
+    this.formData.competences.customCategories.push({
+      name: '',
+      content: ''
+    });
+  }
+
+  removeCategory(index: number) {
+    this.formData.competences.customCategories.splice(index, 1);
+  }
 
   onSubmit() {
     // Sauvegarde locale
@@ -88,8 +139,6 @@ export class TemplateEditorComponent implements OnInit {
       state: { data: this.formData, template: this.templateName }
     });
   }
-
-
 }
 
 

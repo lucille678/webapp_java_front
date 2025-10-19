@@ -1,0 +1,49 @@
+{
+  "title": "E-Portfolio",
+  "sections": [
+    {
+      "name": "accueil",
+      "label": "Accueil",
+      "fields": [
+        { "name": "firstName", "label": "Prénom", "type": "text" },
+        { "name": "lastName", "label": "Nom", "type": "text" },
+        { "name": "objective", "label": "Ce que je recherche", "type": "textarea" },
+        { "name": "bio", "label": "Présentation", "type": "textarea" },
+        { "name": "locations", "label": "Lieux de mobilité", "type": "text" },
+        { "name": "photo", "label": "Photo de profil", "type": "file"}
+      ]
+    },
+    {
+      "name": "formation",
+      "label": "Formation",
+      "repeatable": true,
+      "fields": [
+        { "name": "degree", "label": "Nom de la formation", "type": "text" },
+        { "name": "dates", "label": "Période", "type": "date-range" },
+        { "name": "description", "label": "Description", "type": "textarea" }
+      ]
+    },
+    {
+      "name": "experience",
+      "label": "Expériences pro",
+      "repeatable": true,
+      "fields": [
+        { "name": "jobTitle", "label": "Poste", "type": "text" },
+        { "name": "company", "label": "Entreprise", "type": "text" },
+        { "name": "dates", "label": "Période", "type": "date-range" },
+        { "name": "description", "label": "Description", "type": "textarea" }
+      ]
+    },
+    {
+      "name": "competences",
+      "label": "Compétences",
+      "fields": [
+        { "name": "softSkills", "label": "Soft Skills", "type": "textarea" },
+        { "name": "hardSkills", "label": "Hard Skills", "type": "textarea" },
+        { "name": "languages", "label": "Langues", "type": "textarea" },
+        { "name": "certificates", "label": "Certificats", "type": "textarea" },
+        { "name": "certificateFile", "label": "Fichier certificat", "type": "file" }
+      ]
+    }
+  ]
+}

@@ -87,6 +87,49 @@ export class TemplateEditorComponent implements OnInit {
     this.formData[sectionName].splice(index, 1);
   }
 
+  removeFile(sectionName: string, fieldName: string, index?: number) {
+    if (index !== undefined) {
+      this.formData[sectionName][index][fieldName] = null;
+    } else {
+      this.formData[sectionName][fieldName] = null;
+    }
+  }
+
+  getFieldValue(sectionName: string, fieldName: string, index?: number) {
+    if (index !== undefined) {
+      return this.formData[sectionName][index][fieldName];
+    }
+    return this.formData[sectionName][fieldName];
+  }
+
+  isImage(file: any) {
+    return file?.type?.startsWith('image/');
+  }
+
+  isPDF(file: any) {
+    return file?.type === 'application/pdf';
+  }
+
+  getCustomCategories() {
+    if (!this.formData.competences.customCategories) {
+      this.formData.competences.customCategories = [];
+    }
+    return this.formData.competences.customCategories;
+  }
+
+  addCategory() {
+    if (!this.formData.competences.customCategories) {
+      this.formData.competences.customCategories = [];
+    }
+    this.formData.competences.customCategories.push({
+      name: '',
+      content: ''
+    });
+  }
+
+  removeCategory(index: number) {
+    this.formData.competences.customCategories.splice(index, 1);
+  }
 
   onSubmit() {
     // Sauvegarde locale
@@ -96,8 +139,6 @@ export class TemplateEditorComponent implements OnInit {
       state: { data: this.formData, template: this.templateName }
     });
   }
-
-
 }
 
 

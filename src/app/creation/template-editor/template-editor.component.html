@@ -4,10 +4,19 @@
   <form (ngSubmit)="onSubmit()">
     <ng-container *ngFor="let section of config.sections">
       <div class="section">
-        <button type="button" class="section-toggle" (click)="section.open = !section.open">
-          {{ section.label }}
-          <span>{{ section.open ? '▲' : '▼' }}</span>
-        </button>
+        <div class="section-header">
+          <button type="button" class="section-toggle" (click)="section.open = !section.open">
+            {{ section.label }}
+            <span>{{ section.open ? '▲' : '▼' }}</span>
+          </button>
+
+          <button *ngIf="isCustomSection(section.name)"
+                  type="button"
+                  class="delete-section-btn"
+                  (click)="removeCustomSection(section.name)">
+            Supprimer
+          </button>
+        </div>
 
         <div class="section-content" *ngIf="section.open">
           <!-- Section Compétences -->
@@ -76,7 +85,7 @@
 
           <!-- Autres sections (non-compétences) -->
           <ng-container *ngIf="section.name !== 'competences'">
-            <!-- Non-repeatable section -->
+            <!-- Non-repeatable sections -->
             <ng-container *ngIf="!section.repeatable">
               <div *ngFor="let field of section.fields" class="field">
                 <label>{{ field.label }}</label>
@@ -107,61 +116,96 @@
                             (click)="removeFile(section.name, field.name)">✕</button>
                   </div>
                 </div>
-              </div>
-            </ng-container>
 
-            <!-- Repeatable section -->
-            <ng-container *ngIf="section.repeatable">
-              <div *ngFor="let item of formData[section.name]; let i = index" class="repeatable-item">
-                <div *ngFor="let field of section.fields" class="field">
-                  <!-- Non-file fields -->
-                  <ng-container *ngIf="field.type !== 'file'">
-                    <label>{{ field.label }}</label>
-
-                    <!-- Date range for formation/experience -->
-                    <div *ngIf="(section.name === 'formation' || section.name === 'experience') && field.name === 'dates'" class="date-range">
-                      <div class="field">
+                <!-- Date field -->
+                <ng-container *ngIf="field.type === 'date'">
+                  <div class="date-field">
+                    <div class="date-inputs">
+                      <!-- Date de début -->
+                      <div class="date-input-group" *ngIf="field.name === 'startDate'">
                         <label>Date de début</label>
-                        <input type="date" [(ngModel)]="item.startDate" [name]="section.name + '_' + i + '_startDate'">
+                        <input type="date" 
+                               [(ngModel)]="formData[section.name][field.name]"
+                               [name]="section.name + '_' + field.name">
                       </div>
-                      <div class="field">
+                      
+                      <!-- Date de fin -->
+                      <div class="date-input-group" *ngIf="field.name === 'endDate'">
                         <label>Date de fin</label>
-                        <input type="date" [(ngModel)]="item.endDate" [name]="section.name + '_' + i + '_endDate'">
-                        <div class="checkbox-field">
-                          <input type="checkbox" [(ngModel)]="item.current" [name]="section.name + '_' + i + '_current'">
-                          <label>En cours</label>
+                        <input type="date" 
+                               [(ngModel)]="formData[section.name][field.name]"
+                               [name]="section.name + '_' + field.name"
+                               [disabled]="formData[section.name].current">
+                        
+                        <div class="current-checkbox">
+                          <label>
+                            <input type="checkbox" 
+                                   [(ngModel)]="formData[section.name].current"
+                                   [name]="section.name + '_current'">
+                            En cours
+                          </label>
                         </div>
                       </div>
                     </div>
+                  </div>
+                </ng-container>
+              </div>
+            </ng-container>
 
-                    <!-- Other fields -->
-                    <input *ngIf="field.type === 'text' && field.name !== 'dates'"
+            <!-- Repeatable sections (Formation/Experience) -->
+            <ng-container *ngIf="section.repeatable">
+              <div *ngFor="let item of formData[section.name]; let i = index" class="repeatable-item">
+                <div *ngFor="let field of section.fields" class="field">
+                  <label>{{ field.label }}</label>
+
+                  <!-- Special handling for dates in formation/experience -->
+                  <div *ngIf="(section.name === 'formation' || section.name === 'experience') && field.name === 'dates'" class="date-range">
+                    <div class="date-input">
+                      <label>Date de début</label>
+                      <input type="date" [(ngModel)]="item.startDate" [name]="section.name + '_' + i + '_startDate'">
+                    </div>
+
+                    <div class="date-input">
+                      <label>Date de fin</label>
+                      <input type="date" [(ngModel)]="item.endDate" [name]="section.name + '_' + i + '_endDate'"
+                             [disabled]="item.current">
+                      <div class="current-checkbox">
+                        <label>
+                          <input type="checkbox" [(ngModel)]="item.current" [name]="section.name + '_' + i + '_current'">
+                          En cours
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Regular fields -->
+                  <ng-container *ngIf="field.name !== 'dates'">
+                    <input *ngIf="field.type === 'text'"
                            type="text"
                            [(ngModel)]="item[field.name]"
                            [name]="section.name + '_' + i + '_' + field.name">
-                    <textarea *ngIf="field.type === 'textarea' && field.name !== 'dates'"
-                              [(ngModel)]="item[field.name]"
-                              [name]="section.name + '_' + i + '_' + field.name"></textarea>
+                    
+                    <textarea *ngIf="field.type === 'textarea'"
+                            [(ngModel)]="item[field.name]"
+                            [name]="section.name + '_' + i + '_' + field.name"></textarea>
                   </ng-container>
 
                   <!-- File fields -->
-                  <ng-container *ngIf="field.type === 'file'">
-                    <div class="file-field">
-                      <input type="file"
-                             [id]="section.name + '_' + field.name + '_' + i"
-                             (change)="onFileChange($event, section.name, field.name, i)"
-                             [accept]="field.name === 'photo' ? 'image/*' : 'image/*,.pdf'">
-                      <div class="file-preview" *ngIf="getFieldValue(section.name, field.name, i)?.content">
-                        <img *ngIf="isImage(getFieldValue(section.name, field.name, i))"
-                             [src]="getFieldValue(section.name, field.name, i).content"
-                             [alt]="field.label">
-                        <button type="button" class="remove-file" 
-                                (click)="removeFile(section.name, field.name, i)">
-                          ✕
-                        </button>
-                      </div>
+                  <div *ngIf="field.type === 'file'" class="file-field">
+                    <input type="file"
+                           [id]="section.name + '_' + field.name + '_' + i"
+                           (change)="onFileChange($event, section.name, field.name, i)"
+                           [accept]="field.name === 'photo' ? 'image/*' : 'image/*,.pdf'">
+                    <div class="file-preview" *ngIf="getFieldValue(section.name, field.name, i)?.content">
+                      <img *ngIf="isImage(getFieldValue(section.name, field.name, i))"
+                           [src]="getFieldValue(section.name, field.name, i).content"
+                           [alt]="field.label">
+                      <button type="button" class="remove-file" 
+                              (click)="removeFile(section.name, field.name, i)">
+                        ✕
+                      </button>
                     </div>
-                  </ng-container>
+                  </div>
 
                 </div>
                 <button type="button" class="remove-btn" (click)="removeItem(section.name, i)">Supprimer</button>
@@ -173,6 +217,42 @@
       </div>
     </ng-container>
 
-    <button type="submit">Voir mon portfolio</button>
+    <!-- Section pour ajouter une nouvelle catégorie -->
+    <div class="section">
+      <div class="section-header">
+        <button type="button" class="section-toggle" (click)="customSectionOpen = !customSectionOpen">
+          Ajouter une nouvelle section
+          <span>{{ customSectionOpen ? '▲' : '▼' }}</span>
+        </button>
+      </div>
+
+      <div class="section-content" *ngIf="customSectionOpen">
+        <div class="custom-section-creator">
+          <input type="text" [(ngModel)]="newSection.name" name="newSectionName" placeholder="Nom de la section">
+          
+          <div class="field-types">
+            <label>
+              <input type="checkbox" [(ngModel)]="newSection.hasText" name="hasText">
+              Champ texte
+            </label>
+            <label>
+              <input type="checkbox" [(ngModel)]="newSection.hasImage" name="hasImage">
+              Images
+            </label>
+            <label>
+              <input type="checkbox" [(ngModel)]="newSection.hasDate" name="hasDate">
+              Date
+            </label>
+          </div>
+          
+          <button type="button" class="create-section-btn" (click)="createNewSection()">
+            + Créer la section
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bouton de soumission -->
+    <button type="submit" class="submit-btn">Voir mon portfolio</button>
   </form>
 </div>

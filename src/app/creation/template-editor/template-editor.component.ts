@@ -1,29 +1,168 @@
 import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
-import { FormsModule } from "@angular/forms";
-import { CommonModule } from '@angular/common';
+import { SectionService } from '../../services/section.service';
+
+interface TemplateField {
+  name: string;
+  label: string;
+  type: string;
+  multiple?: boolean;
+}
+
+interface Section {
+  name: string;
+  label: string;
+  fields: TemplateField[];
+  repeatable?: boolean;
+  open?: boolean;
+}
 
 @Component({
   selector: 'app-template-editor',
   templateUrl: './template-editor.component.html',
   standalone: true,
   imports: [
-    FormsModule,
     CommonModule,
+    FormsModule
   ],
   styleUrls: ['./template-editor.component.scss']
 })
 export class TemplateEditorComponent implements OnInit {
   templateName: string | null = null;
-  config: any;
+  config: { title: string; sections: Section[] } | null = null;
   formData: any = {};
+  customSectionOpen = false;
+  newSection = {
+    name: '',
+    hasText: false,
+    hasImage: false,
+    hasDate: false
+  };
+  customSections: Section[] = [];
+  showDialog = false;
 
-  constructor(private route: ActivatedRoute, private http: HttpClient, private router: Router) {}
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private http: HttpClient,
+    private sectionService: SectionService
+  ) {}
 
-  onFileChange(event: any, sectionName: string, fieldName: string, index?: number) {
+  ngOnInit() {
+    this.templateName = this.route.snapshot.paramMap.get('templateName');
+    if (this.templateName) {
+      // Load saved custom sections specific to this template
+      const savedCustomSections = localStorage.getItem(`customSections_${this.templateName}`);
+      if (savedCustomSections) {
+        this.customSections = JSON.parse(savedCustomSections);
+      }
+
+      // Load saved form data
+      const savedData = localStorage.getItem(`formData_${this.templateName}`);
+      
+      this.http.get(`assets/templates/${this.templateName}/config.json`)
+        .subscribe({
+          next: (data: any) => {
+            this.config = data;
+            // Add custom sections to config sections
+            if (this.customSections.length > 0 && this.config) {
+              this.config.sections = [...(this.config.sections || []), ...this.customSections];
+            }
+            this.formData = savedData ? JSON.parse(savedData) : this.initializeFormData();
+          },
+          error: (error) => console.error('Error loading config:', error)
+        });
+    }
+  }
+
+  private initializeFormData() {
+    const data: any = {};
+    this.config?.sections.forEach((section: any) => {
+      if (section.name === 'competences') {
+        data[section.name] = {
+          softSkills: '',
+          hardSkills: '',
+          languages: '',
+          certificates: [],
+          customCategories: []
+        };
+      } else if (section.repeatable) {
+        data[section.name] = [];
+      } else {
+        data[section.name] = {};
+      }
+    });
+    return data;
+  }
+
+  createNewSection() {
+    if (this.newSection.name) {
+      // Créer la nouvelle section
+      const newSection: Section = {
+        name: this.newSection.name.toLowerCase(),
+        label: this.newSection.name,
+        fields: [],
+        open: true
+      };
+
+      // Ajouter les champs selon les options sélectionnées
+      if (this.newSection.hasText) {
+        newSection.fields.push({
+          name: 'text',
+          label: 'Texte',
+          type: 'textarea'
+        });
+      }
+      if (this.newSection.hasImage) {
+        newSection.fields.push({
+          name: 'image',
+          label: 'Image',
+          type: 'file'
+        });
+      }
+      if (this.newSection.hasDate) {
+        newSection.fields.push({
+          name: 'date',
+          label: 'Date',
+          type: 'date'
+        });
+      }
+
+      // Ajouter la section aux sections personnalisées
+      this.customSections.push(newSection);
+
+      // Mettre à jour config.sections
+      if (this.config) {
+        this.config.sections = [...this.config.sections, newSection];
+      }
+
+      // Initialiser les données pour la nouvelle section
+      this.formData[newSection.name] = {};
+
+      // Sauvegarder les sections personnalisées
+      if (this.templateName) {
+        localStorage.setItem(`customSections_${this.templateName}`, JSON.stringify(this.customSections));
+        localStorage.setItem(`formData_${this.templateName}`, JSON.stringify(this.formData));
+      }
+
+      // Réinitialiser le formulaire
+      this.newSection = {
+        name: '',
+        hasText: false,
+        hasImage: false,
+        hasDate: false
+      };
+      
+      this.customSectionOpen = false;
+    }
+  }
+
+  onFileChange(event: Event, sectionName: string, fieldName: string, index?: number) {
     const input = event.target as HTMLInputElement;
-    if (!input.files || input.files.length === 0) return;
+    if (!input.files?.length) return;
 
     const file = input.files[0];
     const reader = new FileReader();
@@ -32,7 +171,7 @@ export class TemplateEditorComponent implements OnInit {
       const fileData = {
         name: file.name,
         type: file.type,
-        content: reader.result // base64
+        content: reader.result
       };
 
       if (index !== undefined) {
@@ -42,65 +181,7 @@ export class TemplateEditorComponent implements OnInit {
       }
     };
 
-    // On lit le fichier comme Base64 (pour preview image ou pdf)
     reader.readAsDataURL(file);
-  }
-
-  ngOnInit(): void {
-    this.templateName = this.route.snapshot.paramMap.get('templateName');
-    if (this.templateName) {
-      this.http.get(`assets/templates/${this.templateName}/config.json`)
-        .subscribe({
-          next: (data: any) => {
-            this.config = data;
-            // Initialize formData structure
-            this.formData = {};
-            this.config.sections.forEach((section: any) => {
-              if (section.name === 'competences') {
-                this.formData[section.name] = {
-                  softSkills: '',
-                  hardSkills: '',
-                  languages: '',
-                  certificates: [],
-                  customCategories: []
-                };
-              } else if (section.repeatable) {
-                this.formData[section.name] = [];
-              } else {
-                this.formData[section.name] = {};
-              }
-            });
-          },
-          error: (error) => console.error('Error loading config:', error)
-        });
-    }
-  }
-
-  addItem(sectionName: string) {
-    const sectionConfig = this.config.sections.find((s: any) => s.name === sectionName);
-    const newItem: any = {};
-    sectionConfig.fields.forEach((f: any) => {
-      if (f.type === 'date-range') {
-        newItem.startDate = '';
-        newItem.endDate = '';
-        newItem.current = false;
-      } else {
-        newItem[f.name] = '';
-      }
-    });
-    this.formData[sectionName].push(newItem);
-  }
-
-  removeItem(sectionName: string, index: number) {
-    this.formData[sectionName].splice(index, 1);
-  }
-
-  removeFile(sectionName: string, fieldName: string, index?: number) {
-    if (index !== undefined) {
-      this.formData[sectionName][index][fieldName] = null;
-    } else {
-      this.formData[sectionName][fieldName] = null;
-    }
   }
 
   getFieldValue(sectionName: string, fieldName: string, index?: number) {
@@ -176,16 +257,99 @@ export class TemplateEditorComponent implements OnInit {
   }
 
   onSubmit() {
-    // Sauvegarde locale
+    if (!this.templateName) return;
+    
+    // Save to localStorage
     localStorage.setItem(`formData_${this.templateName}`, JSON.stringify(this.formData));
 
+    // Navigate to preview with data
     this.router.navigate(['/preview'], {
-      state: { data: this.formData, template: this.templateName }
+      state: { 
+        data: this.formData, 
+        template: this.templateName 
+      }
     });
   }
+
+  showNewSectionDialog() {
+    this.showDialog = true;
+  }
+
+  cancelNewSection() {
+    this.showDialog = false;
+  }
+
+  isCustomSection(sectionName: string): boolean {
+    return this.customSections.some(s => s.name === sectionName);
+  }
+
+  removeCustomSection(sectionName: string) {
+    // Supprimer la section des sections personnalisées
+    this.customSections = this.customSections.filter(s => s.name !== sectionName);
+    
+    // Supprimer la section de config.sections
+    if (this.config) {
+      this.config.sections = this.config.sections.filter(s => s.name !== sectionName);
+    }
+    
+    // Supprimer les données associées
+    delete this.formData[sectionName];
+    
+    // Sauvegarder les modifications
+    if (this.templateName) {
+      localStorage.setItem(`customSections_${this.templateName}`, JSON.stringify(this.customSections));
+      localStorage.setItem(`formData_${this.templateName}`, JSON.stringify(this.formData));
+    }
+  }
+
+  removeFile(sectionName: string, fieldName: string, index?: number) {
+    if (index !== undefined) {
+      delete this.formData[sectionName][index][fieldName];
+    } else {
+      delete this.formData[sectionName][fieldName];
+    }
+
+    if (this.templateName) {
+      localStorage.setItem(`formData_${this.templateName}`, JSON.stringify(this.formData));
+    }
+  }
+
+  addItem(sectionName: string) {
+    if (!Array.isArray(this.formData[sectionName])) {
+      this.formData[sectionName] = [];
+    }
+
+    const newItem: any = {
+      startDate: '',
+      endDate: '',
+      current: false
+    };
+
+    this.config?.sections
+      .find(s => s.name === sectionName)
+      ?.fields.forEach(field => {
+        if (field.name !== 'dates') {
+          newItem[field.name] = '';
+        }
+      });
+
+    this.formData[sectionName].push(newItem);
+
+    // Save changes
+    if (this.templateName) {
+      localStorage.setItem(`formData_${this.templateName}`, JSON.stringify(this.formData));
+    }
+  }
+
+  removeItem(sectionName: string, index: number) {
+    if (Array.isArray(this.formData[sectionName])) {
+      this.formData[sectionName].splice(index, 1);
+      
+      // Save changes
+      if (this.templateName) {
+        localStorage.setItem(`formData_${this.templateName}`, JSON.stringify(this.formData));
+      }
+    }
+  }
 }
-
-
-
-
 

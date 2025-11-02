@@ -57,6 +57,16 @@
         &.active {
           color: #667eea;
           border-bottom: 2px solid #667eea;
+
+          &::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background-color: #f8f9fa; // Même couleur que le background
+          }
         }
       }
     }
@@ -167,4 +177,31 @@
 /* Smooth scroll pour les sections */
 html {
   scroll-behavior: smooth;
+}
+
+// Pour les dates dans le formulaire
+.date-field {
+  .date-inputs {
+    input[type="date"] {
+      padding: 8px 12px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-family: inherit;
+      font-size: 1rem;
+      width: 100%;
+      max-width: 200px;
+
+      &::-webkit-calendar-picker-indicator {
+        cursor: pointer;
+        padding: 4px;
+      }
+    }
+
+    .current-checkbox {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-left: 1rem;
+    }
+  }
 }

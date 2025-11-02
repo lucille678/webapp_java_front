@@ -3,16 +3,76 @@ import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 
+interface FormData {
+  accueil?: {
+    firstName?: string;
+    lastName?: string;
+    photo?: { content: string };
+    objective?: string;
+    bio?: string;
+    locations?: string;
+  };
+  formation?: Array<{
+    degree: string;
+    school: string;
+    startDate: string;
+    endDate: string;
+    current: boolean;
+    description: string;
+  }>;
+  experience?: Array<{
+    jobTitle: string;
+    company: string;
+    startDate: string;
+    endDate: string;
+    current: boolean;
+    description: string;
+  }>;
+  competences?: {
+    softSkills?: string;
+    hardSkills?: string;
+    languages?: string;
+    certificates?: Array<{
+      name: string;
+      file?: { content: string };
+    }>;
+    customCategories?: Array<{
+      name: string;
+      content: string;
+    }>;
+  };
+  contact?: {
+    email?: string;
+    phone?: string;
+    address?: string;
+    linkedin?: string;
+  };
+}
+
 @Component({
   selector: 'app-template-preview',
   standalone: true,
   imports: [CommonModule],
   templateUrl: './template-preview.component.html',
-  styleUrls: ['./template-preview.component.scss']
+  styleUrls: ['./template-preview.component.scss'],
+  styles: [`
+    :host {
+      display: block;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 9999;
+      background: #fff;
+    }
+  `]
 })
 export class TemplatePreviewComponent implements OnInit {
-  data: any;
+  data: FormData = {};
   template: string = '';
+  templateName: string | null = null;
+  customSections: any[] = [];
 
   isScrolled: boolean = false;
   mobileMenuOpen: boolean = false;
@@ -25,7 +85,11 @@ export class TemplatePreviewComponent implements OnInit {
   ];
   activeSection: string = 'accueil';
 
-  constructor(private router: Router, private http: HttpClient, private renderer: Renderer2) {}
+  constructor(
+    private router: Router, 
+    private http: HttpClient, 
+    private renderer: Renderer2
+  ) {}
 
   @HostListener('window:scroll', [])
   onWindowScroll() {
@@ -43,29 +107,111 @@ export class TemplatePreviewComponent implements OnInit {
     }
   }
 
-  ngOnInit(): void {
-    const state = history.state;
-    this.template = state.template;
-    this.data = state.data;
+  private loadTemplateStyle(templateName: string) {
+    const existingLink = document.getElementById(`template-style-${templateName}`);
+    if (existingLink) {
+      existingLink.remove();
+    }
 
-    // Charger le CSS du template pour garder le style
+    const head = document.getElementsByTagName('head')[0];
+    const link = document.createElement('link');
+    link.id = `template-style-${templateName}`;
+    link.rel = 'stylesheet';
+    link.type = 'text/css';
+    link.href = `assets/templates/${templateName}/style.css`;
+    head.appendChild(link);
+  }
+
+  ngOnInit(): void {
+    // Récupérer le state de la navigation
+    const state = history.state;
+    
+    console.log('State reçu:', state); // Debug
+
+    // Récupérer le template
+    if (state?.template) {
+      this.template = state.template;
+      this.templateName = state.template;
+      console.log('Template:', this.template); // Debug
+    } else {
+      // Si pas de template dans le state, essayer de le récupérer depuis l'URL
+      const urlParts = this.router.url.split('/');
+      this.template = urlParts[urlParts.length - 1];
+      this.templateName = this.template;
+      console.log('Template depuis URL:', this.template); // Debug
+    }
+
+    // Récupérer les données
+    if (state?.data && Object.keys(state.data).length > 0) {
+      this.data = state.data;
+      console.log('Données du state:', this.data); // Debug
+    } else if (this.templateName) {
+      // Essayer de récupérer depuis localStorage
+      const savedData = localStorage.getItem(`formData_${this.templateName}`);
+      if (savedData) {
+        this.data = JSON.parse(savedData);
+        console.log('Données du localStorage:', this.data); // Debug
+      } else {
+        console.warn('Aucune donnée trouvée dans localStorage'); // Debug
+      }
+    }
+
+    // Charger les sections personnalisées
+    if (this.templateName) {
+      const savedCustomSections = localStorage.getItem(`customSections_${this.templateName}`);
+      if (savedCustomSections) {
+        this.customSections = JSON.parse(savedCustomSections);
+        
+        // Ajouter les sections personnalisées à la navigation
+        this.customSections.forEach(section => {
+          if (!this.sections.some(s => s.id === section.name)) {
+            this.sections.push({
+              id: section.name,
+              label: section.label
+            });
+          }
+        });
+        console.log('Sections personnalisées:', this.customSections); // Debug
+      }
+    }
+
+    // Charger le CSS du template (UNE SEULE FOIS)
     if (this.template) {
-      const link = this.renderer.createElement('link');
-      link.rel = 'stylesheet';
-      link.href = `assets/templates/${this.template}/style.css`;
-      this.renderer.appendChild(document.head, link);
+      this.loadTemplateStyle(this.template);
+    }
+
+    console.log('Données finales chargées:', this.data); // Debug
+  }
+
+  ngOnDestroy() {
+    // Nettoyer les styles du template quand on quitte le composant
+    if (this.templateName) {
+      const styleLink = document.getElementById(`template-style-${this.templateName}`);
+      if (styleLink) {
+        styleLink.remove();
+      }
     }
   }
 
   scrollToSection(sectionId: string) {
     const element = document.getElementById(sectionId);
     if (element) {
-      const yOffset = -80;
-      const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
-      window.scrollTo({ top: y, behavior: 'smooth' });
+      const navbar = document.querySelector('.portfolio-nav') as HTMLElement;
+      const navbarHeight = navbar ? navbar.offsetHeight : 0;
+
+      // Calcul de la position cible, en tenant compte de la hauteur de la navbar
+      const y = element.getBoundingClientRect().top + window.scrollY - navbarHeight;
+
+      window.scrollTo({
+        top: y,
+        behavior: 'smooth'
+      });
     }
+
+    // Ferme le menu mobile
     this.mobileMenuOpen = false;
   }
+
 
   toggleMobileMenu() {
     this.mobileMenuOpen = !this.mobileMenuOpen;
@@ -81,19 +227,33 @@ export class TemplatePreviewComponent implements OnInit {
     alert('Fonctionnalité de publication à venir !');
   }
 
-  formatDateRange(startDate: string, endDate: string): string {
+  formatDateRange(startDate: string, endDate: string, current?: boolean): string {
+    if (!startDate) return '';
+
     const formatDate = (date: string) => {
-      if (!date) return '';
-      const d = new Date(date);
-      return d.toLocaleDateString('fr-FR', { 
-        month: 'long', 
-        year: 'numeric'
-      });
+      try {
+        const d = new Date(date);
+        if (isNaN(d.getTime())) return '';
+        const month = d.toLocaleDateString('fr-FR', { month: 'long' });
+        const year = d.getFullYear();
+        return `${month.charAt(0).toUpperCase() + month.slice(1)} ${year}`;
+      } catch {
+        return date;
+      }
     };
 
     const start = formatDate(startDate);
-    const end = endDate ? formatDate(endDate) : 'Aujourd\'hui';
+    const end = current ? 'Aujourd\'hui' : endDate ? formatDate(endDate) : '';
 
-    return `${start} - ${end}`;
+    return `${start}${end ? ' - ' + end : ''}`;
+  }
+
+  getSectionData(sectionName: string): any {
+    return this.data ? this.data[sectionName as keyof FormData] : null;
+  }
+
+  getSectionFieldData(sectionName: string, fieldName: string): any {
+    const sectionData = this.getSectionData(sectionName);
+    return sectionData ? sectionData[fieldName] : null;
   }
 }

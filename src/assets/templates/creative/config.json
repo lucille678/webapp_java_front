@@ -40,10 +40,9 @@
       "fields": [
         { "name": "softSkills", "label": "Soft Skills", "type": "textarea" },
         { "name": "hardSkills", "label": "Hard Skills", "type": "textarea" },
-        { "name": "languages", "label": "Langues", "type": "textarea" },
-        { "name": "certificates", "label": "Certificats", "type": "textarea" },
-        { "name": "certificateFile", "label": "Fichier certificat", "type": "file" }
+        { "name": "languages", "label": "Langues", "type": "textarea" }
       ]
     }
-  ]
+  ],
+  "customSections": []
 }

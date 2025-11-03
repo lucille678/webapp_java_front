@@ -39,8 +39,9 @@ export class TemplateEditorComponent implements OnInit {
     name: '',
     hasText: false,
     hasImage: false,
+    hasFile: false,
     hasDate: false,
-    hasPeriod: false
+    hasPeriod: false,
   };
   customSections: Section[] = [];
   showDialog = false;
@@ -165,6 +166,13 @@ export class TemplateEditorComponent implements OnInit {
           { name: 'endDate', label: 'Date de fin', type: 'date' }
         );
       }
+      if (this.newSection.hasFile) {
+        newSection.fields.push({
+          name: 'file',
+          label: 'Fichier',
+          type: 'file'
+        });
+      }
 
       // Ajouter la section aux sections personnalisées
       this.customSections.push(newSection);
@@ -188,6 +196,7 @@ export class TemplateEditorComponent implements OnInit {
         name: '',
         hasText: false,
         hasImage: false,
+        hasFile: false,
         hasDate: false,
         hasPeriod: false
       };

@@ -72,6 +72,13 @@ export class TemplateEditorComponent implements OnInit {
               this.config.sections = [...(this.config.sections || []), ...this.customSections];
             }
             this.formData = savedData ? JSON.parse(savedData) : this.initializeFormData();
+            
+            // S'assurer que contact est toujours initialisé
+            if (!this.formData.contact) {
+              this.initializeContactData();
+            }
+            
+            console.log('FormData initialisé:', this.formData);
           },
           error: (error) => console.error('Error loading config:', error)
         });
@@ -89,6 +96,16 @@ export class TemplateEditorComponent implements OnInit {
           certificates: [],
           customCategories: []
         };
+      } else if (section.name === 'contact') {
+        // Initialisation explicite de tous les champs de contact
+        data[section.name] = {
+          email: '',
+          phone: '',
+          address: '',
+          linkedin: '',
+          github: '',
+          twitter: ''
+        };
       } else if (section.repeatable) {
         data[section.name] = [];
       } else {
@@ -96,6 +113,17 @@ export class TemplateEditorComponent implements OnInit {
       }
     });
     return data;
+  }
+
+  private initializeContactData() {
+    this.formData.contact = {
+      email: '',
+      phone: '',
+      address: '',
+      linkedin: '',
+      github: '',
+      twitter: ''
+    };
   }
 
   createNewSection() {
@@ -352,4 +380,3 @@ export class TemplateEditorComponent implements OnInit {
     }
   }
 }
-

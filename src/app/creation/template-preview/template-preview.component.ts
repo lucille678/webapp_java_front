@@ -46,6 +46,8 @@ interface FormData {
     phone?: string;
     address?: string;
     linkedin?: string;
+    github?: string;
+    twitter?: string;
   };
 }
 
@@ -77,6 +79,7 @@ export class TemplatePreviewComponent implements OnInit {
   template: string = '';
   templateName: string | null = null;
   customSections: any[] = [];
+  currentYear = new Date().getFullYear();
 
   isScrolled: boolean = false;
   mobileMenuOpen: boolean = false;
@@ -85,7 +88,8 @@ export class TemplatePreviewComponent implements OnInit {
     { id: 'accueil', label: 'Accueil' },
     { id: 'formations', label: 'Formations' },
     { id: 'experiences', label: 'Expériences' },
-    { id: 'competences', label: 'Compétences' }
+    { id: 'competences', label: 'Compétences' },
+    { id: 'contact', label: 'Contact' }
   ];
   activeSection: string = 'accueil';
 

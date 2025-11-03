@@ -41,7 +41,7 @@ body, html {
 }
 
 .portfolio-content {
-  padding-top: 0px;  
+  padding-top: 0;  /* Pas de padding, le header commence directement */
   margin: 0;
 }
 
@@ -90,7 +90,7 @@ body, html {
   left: 0;
   width: 100%;
   height: 3px;
-  background: #3498db;
+  background: #15198f;
   transform: scaleX(0);
   transition: transform 0.3s ease;
 }
@@ -170,6 +170,7 @@ header {
   color: #333;
   padding: 4rem 2rem;
   margin: 0;
+  margin-top: 0px;  
 }
 
 .header-content {
@@ -188,7 +189,7 @@ header img {
   height: 250px;
   border-radius: 0%;
   object-fit: cover;
-  border: 0px solid rgb(66, 66, 66);
+  border: 0px solid rgb(102, 102, 102);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
 }
 
@@ -487,4 +488,86 @@ section:nth-child(odd) {
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+/* FOOTER CONTACT */
+footer {
+  background: #2c3e50;
+  color: white;
+  padding: 3rem 2rem 2rem;
+  margin-top: 0;
+}
+
+.footer-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+}
+
+.footer-section h3 {
+  font-size: 1.3rem;
+  margin-bottom: 1rem;
+  color: #ecf0f1;
+}
+
+.contact-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.contact-item {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  color: #bdc3c7;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.contact-item:hover {
+  color: #3498db;
+}
+
+.contact-item svg,
+.contact-item i {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.social-links {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.social-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  color: white;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.social-link:hover {
+  background: #3498db;
+  transform: translateY(-3px);
+}
+
+.footer-bottom {
+  max-width: 1200px;
+  margin: 2rem auto 0;
+  padding-top: 2rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  text-align: center;
+  color: #95a5a6;
+  font-size: 0.9rem;
 }

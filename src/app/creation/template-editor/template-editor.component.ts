@@ -39,7 +39,8 @@ export class TemplateEditorComponent implements OnInit {
     name: '',
     hasText: false,
     hasImage: false,
-    hasDate: false
+    hasDate: false,
+    hasPeriod: false
   };
   customSections: Section[] = [];
   showDialog = false;
@@ -158,6 +159,12 @@ export class TemplateEditorComponent implements OnInit {
           type: 'date'
         });
       }
+      if (this.newSection.hasPeriod) {
+        newSection.fields.push(
+          { name: 'startDate', label: 'Date de début', type: 'date' },
+          { name: 'endDate', label: 'Date de fin', type: 'date' }
+        );
+      }
 
       // Ajouter la section aux sections personnalisées
       this.customSections.push(newSection);
@@ -181,7 +188,8 @@ export class TemplateEditorComponent implements OnInit {
         name: '',
         hasText: false,
         hasImage: false,
-        hasDate: false
+        hasDate: false,
+        hasPeriod: false
       };
       
       this.customSectionOpen = false;

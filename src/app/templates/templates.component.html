@@ -5,26 +5,10 @@
     <div
       class="template-card"
       *ngFor="let template of templates"
-      (click)="openNameDialog(template.name)"
+      (click)="selectTemplate(template.name)"
     >
       <img [src]="template.image" [alt]="template.displayName" />
       <h2>{{ template.displayName }}</h2>
-    </div>
-  </div>
-
-  <!-- Fenêtre modale -->
-  <div class="modal-backdrop" *ngIf="showDialog">
-    <div class="modal">
-      <h2>Nom du portfolio</h2>
-      <input
-        type="text"
-        [(ngModel)]="portfolioName"
-        placeholder="Entrez un nom..."
-      />
-      <div class="modal-actions">
-        <button class="cancel" (click)="cancelDialog()">Annuler</button>
-        <button class="confirm" (click)="confirmDialog()">Créer</button>
-      </div>
     </div>
   </div>
 </div>

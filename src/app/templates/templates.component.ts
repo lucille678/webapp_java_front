@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 
 interface Template {
   name: string;
@@ -12,7 +11,7 @@ interface Template {
 @Component({
   selector: 'templates',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule],
   templateUrl: './templates.component.html',
   styleUrl: './templates.component.scss'
 })
@@ -23,28 +22,14 @@ export class TemplatesComponent {
     { name: 'creative', displayName: 'Créatif', image: 'assets/templates/creative/preview.png' }
   ];
 
-  showDialog = false;
-  selectedTemplate: string | null = null;
-  portfolioName: string = '';
-
   constructor(private router: Router) {}
 
-  openNameDialog(templateName: string) {
-    this.selectedTemplate = templateName;
-    this.showDialog = true;
-  }
-
-  cancelDialog() {
-    this.showDialog = false;
-    this.portfolioName = '';
-  }
-
-  confirmDialog() {
-    if (!this.portfolioName.trim() || !this.selectedTemplate) return;
-    this.showDialog = false;
-
-    this.router.navigate(['/creation/template-editor', this.selectedTemplate], {
-      state: { portfolioName: this.portfolioName }
+  selectTemplate(templateName: string) {
+    // Génère un nom par défaut basé sur la date
+    const defaultName = `Portfolio ${new Date().toLocaleDateString('fr-FR')}`;
+    
+    this.router.navigate(['/creation/template-editor', templateName], {
+      state: { portfolioName: defaultName }
     });
   }
 }

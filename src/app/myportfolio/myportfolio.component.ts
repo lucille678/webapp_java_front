@@ -1,9 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from "@angular/router";
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'myportfolio',
   standalone: true,
+  imports: [CommonModule],
   templateUrl: './myportfolio.component.html',
   styleUrls: ['./myportfolio.component.scss']
 })

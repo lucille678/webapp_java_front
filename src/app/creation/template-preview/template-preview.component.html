@@ -1,4 +1,4 @@
-<div [class]="templateName + '-template'" class="portfolio-preview" style="min-height: 100vh; width: 100%;">
+<div [class]="templateName + '-template'" class="portfolio-preview">
   <!-- Navbar fixe -->
   <nav class="portfolio-nav" [class.scrolled]="isScrolled">
     <div class="nav-content">
@@ -30,12 +30,14 @@
         <img *ngIf="data?.accueil?.photo?.content" 
              [src]="data?.accueil?.photo?.content" 
              alt="Photo de profil">
-        <h1>{{ data?.accueil?.firstName }} {{ data?.accueil?.lastName }}</h1>
-        <p>{{ data?.accueil?.objective }}</p>
-        <p class="bio">{{ data?.accueil?.bio }}</p>
-        <p class="location" *ngIf="data?.accueil?.locations">
-          {{ data?.accueil?.locations }}
-        </p>
+        <div>
+          <h1>{{ data?.accueil?.firstName }} {{ data?.accueil?.lastName }}</h1>
+          <p>{{ data?.accueil?.objective }}</p>
+          <p class="bio">{{ data?.accueil?.bio }}</p>
+          <p class="location" *ngIf="data?.accueil?.locations">
+            {{ data?.accueil?.locations }}
+          </p>
+        </div>
       </div>
     </header>
 

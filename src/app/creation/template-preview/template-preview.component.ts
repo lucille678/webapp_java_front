@@ -61,10 +61,14 @@ interface FormData {
       position: fixed;
       top: 0;
       left: 0;
+      right: 0;
+      bottom: 0;
       width: 100%;
-      height: 100%;
-      z-index: 9999;
+      height: 100vh;
       background: #fff;
+      overflow-y: auto;
+      overflow-x: hidden;
+      z-index: 9999;
     }
   `]
 })
@@ -93,7 +97,27 @@ export class TemplatePreviewComponent implements OnInit {
 
   @HostListener('window:scroll', [])
   onWindowScroll() {
-    this.isScrolled = window.pageYOffset > 50;
+    // Utiliser le scroll du :host au lieu de window
+    const scrollTop = (event?.target as HTMLElement)?.scrollTop || 0;
+    this.isScrolled = scrollTop > 50;
+
+    for (const section of this.sections) {
+      const element = document.getElementById(section.id);
+      if (element) {
+        const rect = element.getBoundingClientRect();
+        if (rect.top <= 100 && rect.bottom > 100) {
+          this.activeSection = section.id;
+          break;
+        }
+      }
+    }
+  }
+
+  // Écouter le scroll sur l'élément host
+  @HostListener('scroll', ['$event'])
+  onScroll(event: Event) {
+    const target = event.target as HTMLElement;
+    this.isScrolled = target.scrollTop > 50;
 
     for (const section of this.sections) {
       const element = document.getElementById(section.id);
@@ -123,36 +147,37 @@ export class TemplatePreviewComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    // Cacher le body scroll et la navbar principale
+    document.body.style.overflow = 'hidden';
+    
     // Récupérer le state de la navigation
     const state = history.state;
     
-    console.log('State reçu:', state); // Debug
+    console.log('State reçu:', state);
 
     // Récupérer le template
     if (state?.template) {
       this.template = state.template;
       this.templateName = state.template;
-      console.log('Template:', this.template); // Debug
+      console.log('Template:', this.template);
     } else {
-      // Si pas de template dans le state, essayer de le récupérer depuis l'URL
       const urlParts = this.router.url.split('/');
       this.template = urlParts[urlParts.length - 1];
       this.templateName = this.template;
-      console.log('Template depuis URL:', this.template); // Debug
+      console.log('Template depuis URL:', this.template);
     }
 
     // Récupérer les données
     if (state?.data && Object.keys(state.data).length > 0) {
       this.data = state.data;
-      console.log('Données du state:', this.data); // Debug
+      console.log('Données du state:', this.data);
     } else if (this.templateName) {
-      // Essayer de récupérer depuis localStorage
       const savedData = localStorage.getItem(`formData_${this.templateName}`);
       if (savedData) {
         this.data = JSON.parse(savedData);
-        console.log('Données du localStorage:', this.data); // Debug
+        console.log('Données du localStorage:', this.data);
       } else {
-        console.warn('Aucune donnée trouvée dans localStorage'); // Debug
+        console.warn('Aucune donnée trouvée dans localStorage');
       }
     }
 
@@ -162,7 +187,6 @@ export class TemplatePreviewComponent implements OnInit {
       if (savedCustomSections) {
         this.customSections = JSON.parse(savedCustomSections);
         
-        // Ajouter les sections personnalisées à la navigation
         this.customSections.forEach(section => {
           if (!this.sections.some(s => s.id === section.name)) {
             this.sections.push({
@@ -171,20 +195,23 @@ export class TemplatePreviewComponent implements OnInit {
             });
           }
         });
-        console.log('Sections personnalisées:', this.customSections); // Debug
+        console.log('Sections personnalisées:', this.customSections);
       }
     }
 
-    // Charger le CSS du template (UNE SEULE FOIS)
+    // Charger le CSS du template
     if (this.template) {
       this.loadTemplateStyle(this.template);
     }
 
-    console.log('Données finales chargées:', this.data); // Debug
+    console.log('Données finales chargées:', this.data);
   }
 
   ngOnDestroy() {
-    // Nettoyer les styles du template quand on quitte le composant
+    // Restaurer le scroll du body
+    document.body.style.overflow = 'auto';
+    
+    // Nettoyer les styles du template
     if (this.templateName) {
       const styleLink = document.getElementById(`template-style-${this.templateName}`);
       if (styleLink) {
@@ -197,21 +224,26 @@ export class TemplatePreviewComponent implements OnInit {
     const element = document.getElementById(sectionId);
     if (element) {
       const navbar = document.querySelector('.portfolio-nav') as HTMLElement;
-      const navbarHeight = navbar ? navbar.offsetHeight : 0;
+      const navbarHeight = navbar ? navbar.offsetHeight : 60;
 
-      // Calcul de la position cible, en tenant compte de la hauteur de la navbar
-      const y = element.getBoundingClientRect().top + window.scrollY - navbarHeight;
+      // Utiliser scrollIntoView pour un scroll plus fiable
+      const elementPosition = element.offsetTop;
+      const offsetPosition = elementPosition - navbarHeight;
 
-      window.scrollTo({
-        top: y,
-        behavior: 'smooth'
-      });
+      // Récupérer l'élément host qui scroll
+      const hostElement = document.querySelector('app-template-preview') as HTMLElement;
+      
+      if (hostElement) {
+        hostElement.scrollTo({
+          top: offsetPosition,
+          behavior: 'smooth'
+        });
+      }
     }
 
     // Ferme le menu mobile
     this.mobileMenuOpen = false;
   }
-
 
   toggleMobileMenu() {
     this.mobileMenuOpen = !this.mobileMenuOpen;

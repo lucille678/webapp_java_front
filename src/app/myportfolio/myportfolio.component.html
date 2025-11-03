@@ -1,1 +1,22 @@
-<button class="create-portfolio" (click)="createPortfolio()">Creer mon portfolio</button>
+<div class="myportfolio-container">
+  <h1>Mes Portfolios</h1>
+
+  <button class="create-portfolio" (click)="createPortfolio()">+ Créer un nouveau portfolio</button>
+
+  <div *ngIf="portfolios.length === 0" class="empty">
+    Aucun portfolio enregistré pour le moment.
+  </div>
+
+  <div class="portfolio-list" *ngIf="portfolios.length > 0">
+    <div class="portfolio-card" *ngFor="let p of portfolios">
+      <h3>{{ p.name }}</h3>
+      <p>Template : {{ p.template }}</p>
+
+      <div class="actions">
+        <button (click)="editPortfolio(p.name, p.template)">✏️ Modifier</button>
+        <button (click)="previewPortfolio(p.name, p.template)">👁️ Voir</button>
+        <button (click)="deletePortfolio(p.name)">🗑️ Supprimer</button>
+      </div>
+    </div>
+  </div>
+</div>

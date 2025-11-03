@@ -32,6 +32,7 @@ interface Section {
 })
 export class TemplateEditorComponent implements OnInit {
   templateName: string | null = null;
+  portfolioName: string = '';
   config: { title: string; sections: Section[] } | null = null;
   formData: any = {};
   customSectionOpen = false;
@@ -55,37 +56,42 @@ export class TemplateEditorComponent implements OnInit {
 
   ngOnInit() {
     this.templateName = this.route.snapshot.paramMap.get('templateName');
+    this.portfolioName = history.state.portfolioName || 'Sans nom';
+
     if (this.templateName) {
-      // Load saved custom sections specific to this template
       const savedCustomSections = localStorage.getItem(`customSections_${this.templateName}`);
       if (savedCustomSections) {
         this.customSections = JSON.parse(savedCustomSections);
       }
 
-      // Load saved form data
-      const savedData = localStorage.getItem(`formData_${this.templateName}`);
-      
+      const savedData = localStorage.getItem(`portfolio_${this.portfolioName}`);
+
       this.http.get(`assets/templates/${this.templateName}/config.json`)
         .subscribe({
           next: (data: any) => {
             this.config = data;
-            // Add custom sections to config sections
             if (this.customSections.length > 0 && this.config) {
               this.config.sections = [...(this.config.sections || []), ...this.customSections];
             }
-            this.formData = savedData ? JSON.parse(savedData) : this.initializeFormData();
-            
-            // S'assurer que contact est toujours initialisé
+
+            if (savedData) {
+              const parsed = JSON.parse(savedData);
+              this.formData = parsed.data || {};
+            } else {
+              this.formData = this.initializeFormData();
+            }
+
             if (!this.formData.contact) {
               this.initializeContactData();
             }
-            
-            console.log('FormData initialisé:', this.formData);
+
+            console.log('FormData initialisé pour', this.portfolioName, ':', this.formData);
           },
           error: (error) => console.error('Error loading config:', error)
         });
     }
   }
+
 
   private initializeFormData() {
     const data: any = {};
@@ -187,8 +193,10 @@ export class TemplateEditorComponent implements OnInit {
 
       // Sauvegarder les sections personnalisées
       if (this.templateName) {
-        localStorage.setItem(`customSections_${this.templateName}`, JSON.stringify(this.customSections));
-        localStorage.setItem(`formData_${this.templateName}`, JSON.stringify(this.formData));
+        localStorage.setItem(`portfolio_${this.portfolioName}`, JSON.stringify({
+        template: this.templateName,
+        data: this.formData
+        }));
       }
 
       // Réinitialiser le formulaire
@@ -305,15 +313,21 @@ export class TemplateEditorComponent implements OnInit {
     if (!this.templateName) return;
     
     // Save to localStorage
-    localStorage.setItem(`formData_${this.templateName}`, JSON.stringify(this.formData));
+    localStorage.setItem(`portfolio_${this.portfolioName}`, JSON.stringify({
+    template: this.templateName,
+    data: this.formData
+    }));
+
 
     // Navigate to preview with data
     this.router.navigate(['/preview'], {
       state: { 
         data: this.formData, 
-        template: this.templateName 
+        template: this.templateName,
+        portfolioName: this.portfolioName
       }
     });
+
   }
 
   showNewSectionDialog() {
@@ -342,8 +356,11 @@ export class TemplateEditorComponent implements OnInit {
     
     // Sauvegarder les modifications
     if (this.templateName) {
-      localStorage.setItem(`customSections_${this.templateName}`, JSON.stringify(this.customSections));
-      localStorage.setItem(`formData_${this.templateName}`, JSON.stringify(this.formData));
+      localStorage.setItem(`customSections_${this.portfolioName}`, JSON.stringify(this.customSections));
+      localStorage.setItem(`portfolio_${this.portfolioName}`, JSON.stringify({
+      template: this.templateName,
+      data: this.formData
+    }));
     }
   }
 
@@ -355,7 +372,11 @@ export class TemplateEditorComponent implements OnInit {
     }
 
     if (this.templateName) {
-      localStorage.setItem(`formData_${this.templateName}`, JSON.stringify(this.formData));
+      localStorage.setItem(`portfolio_${this.portfolioName}`, JSON.stringify({
+        template: this.templateName,
+        data: this.formData
+      }));
+
     }
   }
 
@@ -382,7 +403,11 @@ export class TemplateEditorComponent implements OnInit {
 
     // Save changes
     if (this.templateName) {
-      localStorage.setItem(`formData_${this.templateName}`, JSON.stringify(this.formData));
+      localStorage.setItem(`portfolio_${this.portfolioName}`, JSON.stringify({
+        template: this.templateName,
+        data: this.formData
+      }));
+
     }
   }
 
@@ -392,7 +417,10 @@ export class TemplateEditorComponent implements OnInit {
       
       // Save changes
       if (this.templateName) {
-        localStorage.setItem(`formData_${this.templateName}`, JSON.stringify(this.formData));
+        localStorage.setItem(`portfolio_${this.portfolioName}`, JSON.stringify({
+        template: this.templateName,
+        data: this.formData
+      }));
       }
     }
   }

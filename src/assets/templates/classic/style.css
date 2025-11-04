@@ -224,7 +224,7 @@ header .location {
 section {
   min-height: auto;
   padding: 5rem 2rem;
-  max-width: 1200px;
+  max-width: none;
   margin: 0 auto;
 }
 

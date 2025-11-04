@@ -3,6 +3,12 @@ import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 
+interface FileData {
+  name: string;
+  type: string;
+  content: string;
+}
+
 interface FormData {
   accueil?: {
     firstName?: string;
@@ -34,7 +40,7 @@ interface FormData {
     languages?: string;
     certificates?: Array<{
       name: string;
-      file?: { content: string };
+      file?: FileData;
     }>;
     customCategories?: Array<{
       name: string;
@@ -48,6 +54,7 @@ interface FormData {
     linkedin?: string;
     github?: string;
     twitter?: string;
+    [key: string]: any;
   };
 }
 
@@ -187,7 +194,9 @@ export class TemplatePreviewComponent implements OnInit {
 
     // Charger les sections personnalisées
     if (this.templateName) {
-      const savedCustomSections = localStorage.getItem(`customSections_${this.templateName}`);
+      const portfolioName = history.state.portfolioName || localStorage.getItem('currentPortfolioName');
+      const savedCustomSections = localStorage.getItem(`customSections_${portfolioName}`);
+
       if (savedCustomSections) {
         this.customSections = JSON.parse(savedCustomSections);
         
@@ -288,6 +297,39 @@ export class TemplatePreviewComponent implements OnInit {
     return this.data ? this.data[sectionName as keyof FormData] : null;
   }
 
+ openInNewTab(dataUrl: string | undefined) {
+  if (!dataUrl) return;
+  
+  // Ouvrir l'image dans un nouvel onglet
+  const newWindow = window.open();
+  if (newWindow) {
+    newWindow.document.write(`
+      <html>
+        <head>
+          <title>Aperçu</title>
+          <style>
+            body {
+              margin: 0;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              min-height: 100vh;
+              background: #000;
+            }
+            img {
+              max-width: 100%;
+              max-height: 100vh;
+              object-fit: contain;
+            }
+          </style>
+        </head>
+        <body>
+          <img src="${dataUrl}" alt="Aperçu">
+        </body>
+      </html>
+    `);
+  }
+}
   getSectionFieldData(sectionName: string, fieldName: string): any {
     const sectionData = this.getSectionData(sectionName);
     return sectionData ? sectionData[fieldName] : null;

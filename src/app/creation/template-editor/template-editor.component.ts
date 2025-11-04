@@ -59,7 +59,7 @@ ngOnInit() {
   this.portfolioName = history.state.portfolioName || 'Sans nom';
 
   if (this.templateName) {
-    const savedCustomSections = localStorage.getItem(`customSections_${this.templateName}`);
+    const savedCustomSections = localStorage.getItem(`customSections_${this.portfolioName}`);
     if (savedCustomSections) {
       this.customSections = JSON.parse(savedCustomSections);
       this.customSections.forEach(section => section.open = false);
@@ -226,10 +226,10 @@ ngOnInit() {
   if (!input.files?.length) return;
 
   const file = input.files[0];
-  
-  const maxSize = 2 * 1024 * 1024; // 2MB
+
+  const maxSize = 5 * 1024 * 1024; // 5MB
   if (file.size > maxSize) {
-    alert('Le fichier est trop volumineux. Taille maximale : 2MB');
+    alert('Le fichier est trop volumineux. Taille maximale : 5MB');
     input.value = ''; // Reset l'input
     return;
   }
@@ -392,9 +392,9 @@ private saveToLocalStorage() {
     if (!file) return;
     
     // Vérifier la taille
-    const maxSize = 2 * 1024 * 1024; // 2MB
+    const maxSize = 5 * 1024 * 1024; // 5MB
     if (file.size > maxSize) {
-      alert('Le fichier est trop volumineux. Taille maximale : 2MB');
+      alert('Le fichier est trop volumineux. Taille maximale : 5MB');
       event.target.value = '';
       return;
     }

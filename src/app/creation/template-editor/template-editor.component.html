@@ -122,14 +122,21 @@
                 <!-- Champ fichier/image -->
                 <div *ngIf="field.type === 'file'" class="file-field">
                   <input type="file"
-                         [id]="section.name + '_' + field.name"
-                         (change)="onFileChange($event, section.name, field.name)"
-                         accept="image/*">
+                        [id]="section.name + '_' + field.name"
+                        (change)="onFileChange($event, section.name, field.name)"
+                        [accept]="field.name === 'image' ? 'image/*' : '*'">
                   
                   <div class="file-preview" *ngIf="getFieldValue(section.name, field.name)?.content">
+                    <!-- Afficher l'image si c'est une image -->
                     <img *ngIf="isImage(getFieldValue(section.name, field.name))"
-                         [src]="getFieldValue(section.name, field.name).content"
-                         [alt]="field.label">
+                        [src]="getFieldValue(section.name, field.name).content"
+                        [alt]="field.label">
+                    
+                    <!-- Afficher le nom du fichier si ce n'est pas une image -->
+                    <div *ngIf="!isImage(getFieldValue(section.name, field.name))" class="file-info">
+                      <span>📎 {{ getFieldValue(section.name, field.name).name }}</span>
+                    </div>
+                    
                     <button type="button" class="remove-file" 
                             (click)="removeFile(section.name, field.name)">✕</button>
                   </div>

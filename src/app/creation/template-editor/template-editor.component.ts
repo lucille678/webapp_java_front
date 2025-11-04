@@ -54,44 +54,52 @@ export class TemplateEditorComponent implements OnInit {
     private sectionService: SectionService
   ) {}
 
-  ngOnInit() {
-    this.templateName = this.route.snapshot.paramMap.get('templateName');
-    this.portfolioName = history.state.portfolioName || 'Sans nom';
+ngOnInit() {
+  this.templateName = this.route.snapshot.paramMap.get('templateName');
+  this.portfolioName = history.state.portfolioName || 'Sans nom';
 
-    if (this.templateName) {
-      const savedCustomSections = localStorage.getItem(`customSections_${this.templateName}`);
-      if (savedCustomSections) {
-        this.customSections = JSON.parse(savedCustomSections);
-      }
-
-      const savedData = localStorage.getItem(`portfolio_${this.portfolioName}`);
-
-      this.http.get(`assets/templates/${this.templateName}/config.json`)
-        .subscribe({
-          next: (data: any) => {
-            this.config = data;
-            if (this.customSections.length > 0 && this.config) {
-              this.config.sections = [...(this.config.sections || []), ...this.customSections];
-            }
-
-            if (savedData) {
-              const parsed = JSON.parse(savedData);
-              this.formData = parsed.data || {};
-            } else {
-              this.formData = this.initializeFormData();
-            }
-
-            if (!this.formData.contact) {
-              this.initializeContactData();
-            }
-
-            console.log('FormData initialisé pour', this.portfolioName, ':', this.formData);
-          },
-          error: (error) => console.error('Error loading config:', error)
-        });
+  if (this.templateName) {
+    const savedCustomSections = localStorage.getItem(`customSections_${this.templateName}`);
+    if (savedCustomSections) {
+      this.customSections = JSON.parse(savedCustomSections);
+      this.customSections.forEach(section => section.open = false);
     }
-  }
 
+    const savedData = localStorage.getItem(`portfolio_${this.portfolioName}`);
+
+    this.http.get(`assets/templates/${this.templateName}/config.json`)
+      .subscribe({
+        next: (data: any) => {
+          this.config = data;
+          
+          // Initialiser toutes les sections à fermées
+          if (this.config?.sections) {
+            this.config.sections.forEach(section => {
+              section.open = false;
+            });
+          }
+          
+          if (this.customSections.length > 0 && this.config) {
+            this.config.sections = [...(this.config.sections || []), ...this.customSections];
+          }
+
+          if (savedData) {
+            const parsed = JSON.parse(savedData);
+            this.formData = parsed.data || {};
+          } else {
+            this.formData = this.initializeFormData();
+          }
+
+          if (!this.formData.contact) {
+            this.initializeContactData();
+          }
+
+          console.log('FormData initialisé pour', this.portfolioName, ':', this.formData);
+        },
+        error: (error) => console.error('Error loading config:', error)
+      });
+  }
+}
 
   private initializeFormData() {
     const data: any = {};
@@ -141,7 +149,7 @@ export class TemplateEditorComponent implements OnInit {
         name: this.newSection.name.toLowerCase(),
         label: this.newSection.name,
         fields: [],
-        open: true
+        open: false
       };
 
       // Ajouter les champs selon les options sélectionnées
@@ -214,12 +222,39 @@ export class TemplateEditorComponent implements OnInit {
   }
 
   onFileChange(event: Event, sectionName: string, fieldName: string, index?: number) {
-    const input = event.target as HTMLInputElement;
-    if (!input.files?.length) return;
+  const input = event.target as HTMLInputElement;
+  if (!input.files?.length) return;
 
-    const file = input.files[0];
+  const file = input.files[0];
+  
+  const maxSize = 2 * 1024 * 1024; // 2MB
+  if (file.size > maxSize) {
+    alert('Le fichier est trop volumineux. Taille maximale : 2MB');
+    input.value = ''; // Reset l'input
+    return;
+  }
+
+  // Si c'est une image, la compresser
+  if (file.type.startsWith('image/')) {
+    this.compressImage(file, (compressedDataUrl) => {
+      const fileData = {
+        name: file.name,
+        type: file.type,
+        content: compressedDataUrl
+      };
+
+      if (index !== undefined) {
+        this.formData[sectionName][index][fieldName] = fileData;
+      } else {
+        this.formData[sectionName][fieldName] = fileData;
+      }
+      
+      // Sauvegarder immédiatement
+      this.saveToLocalStorage();
+    });
+  } else {
+    // Pour les fichiers non-image (PDF, etc.)
     const reader = new FileReader();
-
     reader.onload = () => {
       const fileData = {
         name: file.name,
@@ -232,10 +267,68 @@ export class TemplateEditorComponent implements OnInit {
       } else {
         this.formData[sectionName][fieldName] = fileData;
       }
+      
+      this.saveToLocalStorage();
     };
-
     reader.readAsDataURL(file);
   }
+}
+
+// Nouvelle méthode pour compresser les images
+private compressImage(file: File, callback: (dataUrl: string) => void) {
+  const reader = new FileReader();
+  reader.onload = (e: any) => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d')!;
+      
+      // Redimensionner si l'image est trop grande
+      let width = img.width;
+      let height = img.height;
+      const maxDimension = 1200; // Largeur/hauteur max
+      
+      if (width > maxDimension || height > maxDimension) {
+        if (width > height) {
+          height = (height / width) * maxDimension;
+          width = maxDimension;
+        } else {
+          width = (width / height) * maxDimension;
+          height = maxDimension;
+        }
+      }
+      
+      canvas.width = width;
+      canvas.height = height;
+      ctx.drawImage(img, 0, 0, width, height);
+      
+      // Compresser avec qualité 0.7
+      const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.7);
+      callback(compressedDataUrl);
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+// Nouvelle méthode pour sauvegarder avec gestion d'erreur
+private saveToLocalStorage() {
+  if (!this.templateName) return;
+  
+  try {
+    localStorage.setItem(`portfolio_${this.portfolioName}`, JSON.stringify({
+      template: this.templateName,
+      data: this.formData
+    }));
+  } catch (error: any) {
+    if (error.name === 'QuotaExceededError') {
+      alert('Espace de stockage insuffisant. Veuillez réduire la taille ou le nombre de fichiers.');
+      console.error('LocalStorage quota exceeded');
+    } else {
+      console.error('Error saving to localStorage:', error);
+    }
+  }
+}
 
   getFieldValue(sectionName: string, fieldName: string, index?: number) {
     if (index !== undefined) {
@@ -296,7 +389,26 @@ export class TemplateEditorComponent implements OnInit {
 
   onCertificateFileChange(event: any, index: number) {
     const file = event.target.files[0];
-    if (file) {
+    if (!file) return;
+    
+    // Vérifier la taille
+    const maxSize = 2 * 1024 * 1024; // 2MB
+    if (file.size > maxSize) {
+      alert('Le fichier est trop volumineux. Taille maximale : 2MB');
+      event.target.value = '';
+      return;
+    }
+
+    if (file.type.startsWith('image/')) {
+      this.compressImage(file, (compressedDataUrl) => {
+        this.formData.competences.certificates[index].file = {
+          name: file.name,
+          type: file.type,
+          content: compressedDataUrl
+        };
+        this.saveToLocalStorage();
+      });
+    } else {
       const reader = new FileReader();
       reader.onload = () => {
         this.formData.competences.certificates[index].file = {
@@ -304,6 +416,7 @@ export class TemplateEditorComponent implements OnInit {
           type: file.type,
           content: reader.result
         };
+        this.saveToLocalStorage();
       };
       reader.readAsDataURL(file);
     }

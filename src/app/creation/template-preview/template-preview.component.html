@@ -153,7 +153,7 @@
                           [href]="fileData.content"
                           [download]="fileData.name"
                           class="file-link">
-                          📎 Télécharger {{ fileData.name }}
+                          Télécharger {{ fileData.name }}
                         </a>
                       </ng-container>
                     </ng-container>
@@ -178,7 +178,7 @@
   <!-- Footer Contact -->
   <footer id="contact" *ngIf="data?.contact">
     <div class="footer-content">
-      <div class="footer-section" *ngIf="data?.contact?.email || data?.contact?.phone">
+      <div class="footer-section" *ngIf="data?.contact?.email || data?.contact?.phone || data?.contact?.address">
         <h3>Contact</h3>
         <div class="contact-info">
           <a *ngIf="data?.contact?.email" [href]="'mailto:' + data?.contact?.email" class="contact-item">
@@ -186,11 +186,11 @@
             <span>{{ data?.contact?.email }}</span>
           </a>
           <a *ngIf="data?.contact?.phone" [href]="'tel:' + data?.contact?.phone" class="contact-item">
-            <span>📞</span>
+            <img src="assets/icons/phone.png" alt="Téléphone" class="contact-icon">
             <span>{{ data?.contact?.phone }}</span>
           </a>
           <div *ngIf="data?.contact?.address" class="contact-item">
-            <span>📍</span>
+            <img src="assets/icons/location.png" alt="Adresse" class="contact-icon">
             <span>{{ data?.contact?.address }}</span>
           </div>
         </div>
@@ -198,17 +198,23 @@
 
       <div class="footer-section" *ngIf="data?.contact?.linkedin || data?.contact?.github || data?.contact?.twitter">
         <h3>Réseaux sociaux</h3>
-        <div class="social-links">
-          <a *ngIf="data?.contact?.linkedin" [href]="data?.contact?.linkedin" target="_blank" class="social-link" title="LinkedIn">
-            <span>in</span>
+          <a *ngIf="data?.contact?.linkedin"
+            [href]="getValidUrl(data?.contact?.linkedin || '')"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="social-link"
+            title="LinkedIn">
+            <img src="assets/icons/linkedin.svg" alt="LinkedIn">
           </a>
-          <a *ngIf="data?.contact?.github" [href]="data?.contact?.github" target="_blank" class="social-link" title="GitHub">
-            <span>GH</span>
+
+          <a *ngIf="data?.contact?.github"
+            [href]="getValidUrl(data?.contact?.github || '')"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="social-link"
+            title="GitHub">
+            <img src="assets/icons/github.svg" alt="GitHub">
           </a>
-          <a *ngIf="data?.contact?.twitter" [href]="data?.contact?.twitter" target="_blank" class="social-link" title="Twitter">
-            <span>𝕏</span>
-          </a>
-        </div>
       </div>
     </div>
 

@@ -157,49 +157,42 @@ export class TemplatePreviewComponent implements OnInit {
     head.appendChild(link);
   }
 
-  ngOnInit(): void {
-    // Cacher le body scroll et la navbar principale
-    document.body.style.overflow = 'hidden';
-    
-    // Récupérer le state de la navigation
-    const state = history.state;
-    
-    console.log('State reçu:', state);
+ngOnInit(): void {
+  // Cacher le body scroll et la navbar principale
+  document.body.style.overflow = 'hidden';
+  
+  // Récupérer le state de la navigation
+  const state = history.state;
+  
+  console.log('📋 State reçu:', state);
 
-    // Récupérer le template
-    if (state?.template) {
-      this.template = state.template;
-      this.templateName = state.template;
-      console.log('Template:', this.template);
-    } else {
-      const urlParts = this.router.url.split('/');
-      this.template = urlParts[urlParts.length - 1];
-      this.templateName = this.template;
-      console.log('Template depuis URL:', this.template);
-    }
+  // Récupérer le template et le nom du portfolio
+  if (state?.template) {
+    this.template = state.template;
+    this.templateName = state.template;
+  } else {
+    const urlParts = this.router.url.split('/');
+    this.template = urlParts[urlParts.length - 1];
+    this.templateName = this.template;
+  }
 
-    // Récupérer les données
-    if (state?.data && Object.keys(state.data).length > 0) {
-      this.data = state.data;
-      console.log('Données du state:', this.data);
-    } else if (this.templateName) {
-      const savedData = localStorage.getItem(`formData_${this.templateName}`);
-      if (savedData) {
-        this.data = JSON.parse(savedData);
-        console.log('Données du localStorage:', this.data);
-      } else {
-        console.warn('Aucune donnée trouvée dans localStorage');
-      }
-    }
+  // 🔥 IMPORTANT : Récupérer le nom du portfolio
+  const portfolioName = state?.portfolioName || 'Sans nom';
+  console.log('📦 Portfolio:', portfolioName);
+  console.log('📐 Template:', this.template);
 
-    // Charger les sections personnalisées
-    if (this.templateName) {
-      const portfolioName = history.state.portfolioName || localStorage.getItem('currentPortfolioName');
-      const savedCustomSections = localStorage.getItem(`customSections_${portfolioName}`);
+  // Charger les sections personnalisées AVANT les données
+  if (portfolioName) {
+    const savedCustomSections = localStorage.getItem(`customSections_${portfolioName}`);
+    console.log('🔍 Clé cherchée:', `customSections_${portfolioName}`);
+    console.log('🔍 Contenu localStorage:', savedCustomSections);
 
-      if (savedCustomSections) {
+    if (savedCustomSections) {
+      try {
         this.customSections = JSON.parse(savedCustomSections);
+        console.log('✅ Sections personnalisées chargées:', this.customSections);
         
+        // Ajouter les sections personnalisées à la navbar
         this.customSections.forEach(section => {
           if (!this.sections.some(s => s.id === section.name)) {
             this.sections.push({
@@ -208,17 +201,43 @@ export class TemplatePreviewComponent implements OnInit {
             });
           }
         });
-        console.log('Sections personnalisées:', this.customSections);
+      } catch (error) {
+        console.error('❌ Erreur parsing sections personnalisées:', error);
+      }
+    } else {
+      console.warn('⚠️ Aucune section personnalisée trouvée');
+    }
+  }
+
+  // Récupérer les données
+  if (state?.data && Object.keys(state.data).length > 0) {
+    this.data = state.data;
+    console.log('✅ Données du state:', this.data);
+  } else if (portfolioName) {
+    const savedData = localStorage.getItem(`portfolio_${portfolioName}`);
+    console.log('🔍 Données localStorage:', savedData);
+    
+    if (savedData) {
+      try {
+        const parsed = JSON.parse(savedData);
+        this.data = parsed.data || {};
+        console.log('✅ Données du localStorage:', this.data);
+      } catch (error) {
+        console.error('❌ Erreur parsing données:', error);
       }
     }
-
-    // Charger le CSS du template
-    if (this.template) {
-      this.loadTemplateStyle(this.template);
-    }
-
-    console.log('Données finales chargées:', this.data);
   }
+
+  // Charger le CSS du template
+  if (this.template) {
+    this.loadTemplateStyle(this.template);
+  }
+
+  console.log('📊 État final:');
+  console.log('  - Sections:', this.sections);
+  console.log('  - Custom sections:', this.customSections);
+  console.log('  - Data:', this.data);
+}
 
   ngOnDestroy() {
     // Restaurer le scroll du body
@@ -334,4 +353,14 @@ export class TemplatePreviewComponent implements OnInit {
     const sectionData = this.getSectionData(sectionName);
     return sectionData ? sectionData[fieldName] : null;
   }
+
+  getValidUrl(url: string): string {
+  if (!url) return '';
+  if (!/^https?:\/\//i.test(url)) {
+    return 'https://' + url;
+  }
+  return url;
+}
+
+
 }

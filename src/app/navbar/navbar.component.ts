@@ -12,7 +12,6 @@ export class NavbarComponent implements OnInit {
   links: Link[] = [
     { name: 'Accueil', href: '/home' },
     { name: 'Mes Portfolios', href: '/myportfolio' },
-    { name: 'Mon Audience', href: '/statistics' },
   ];
 
   isAuthenticated = false;

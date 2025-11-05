@@ -41,7 +41,7 @@ body, html {
 }
 
 .portfolio-content {
-  padding-top: 0;  /* Pas de padding, le header commence directement */
+  padding-top: 0;  
   margin: 0;
 }
 
@@ -345,6 +345,8 @@ section h2::after {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .competence-card {
@@ -367,7 +369,9 @@ section h2::after {
 
 .competence-card p {
   color: #666;
-  line-height: 1.6;
+  line-height: 1.8;
+  white-space: pre-wrap;
+  word-wrap: break-word;
 }
 
 /* Certificats */
@@ -403,6 +407,7 @@ section h2::after {
 .certificate-link:hover {
   background: rgba(52, 152, 219, 0.1);
 }
+
 
 /* ALTERNANCE COULEURS SECTIONS */
 section:nth-child(even) {
@@ -503,7 +508,13 @@ footer {
   margin: 0 auto;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 2rem;
+  gap: 3rem;
+}
+
+.footer-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .footer-section h3 {
@@ -515,20 +526,39 @@ footer {
 .contact-info {
   display: flex;
   flex-direction: column;
-  gap: 0.8rem;
+  align-items: flex-start;
+  gap: 1rem;
+  width: 100%;
 }
 
 .contact-item {
   display: flex;
   align-items: center;
-  gap: 0.8rem;
+  gap: 1rem;
   color: #bdc3c7;
   text-decoration: none;
   transition: color 0.3s ease;
+  width: 100%;
+}
+
+.contact-icon {
+  width: 22px !important;
+  height: 22px !important;
+  max-width: 22px !important;
+  max-height: 22px !important;
+  object-fit: contain;
+  filter: brightness(0) invert(0.8);
+  transition: filter 0.3s ease;
+  flex-shrink: 0;
 }
 
 .contact-item:hover {
   color: #3498db;
+  transform: translateX(5px);
+}
+
+.contact-item:hover .contact-icon {
+  filter: brightness(0) invert(0.4) sepia(1) saturate(10) hue-rotate(180deg);
 }
 
 .contact-item svg,
@@ -542,16 +572,17 @@ footer {
   display: flex;
   gap: 1rem;
   flex-wrap: wrap;
+  justify-content: center;
 }
 
 .social-link {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
-  background: rgba(255, 255, 255, 0.1);
+  width: 45px;
+  height: 45px;
   border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
   color: white;
   text-decoration: none;
   transition: all 0.3s ease;
@@ -560,6 +591,21 @@ footer {
 .social-link:hover {
   background: #3498db;
   transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+}
+
+.social-link img {
+  width: 24px !important;
+  height: 24px !important;
+  max-width: 24px !important;
+  max-height: 24px !important;
+  object-fit: contain;
+  filter: brightness(0) invert(1);
+  transition: filter 0.3s ease;
+}
+
+.social-link:hover img {
+  filter: brightness(0) invert(0);
 }
 
 .footer-bottom {

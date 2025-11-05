@@ -52,8 +52,7 @@
         { "name": "phone", "label": "Téléphone", "type": "text" },
         { "name": "address", "label": "Adresse", "type": "text" },
         { "name": "linkedin", "label": "LinkedIn (URL)", "type": "text" },
-        { "name": "github", "label": "GitHub (URL)", "type": "text" },
-        { "name": "twitter", "label": "Twitter/X (URL)", "type": "text" }
+        { "name": "github", "label": "GitHub (URL)", "type": "text" }
       ]
     }
   ],

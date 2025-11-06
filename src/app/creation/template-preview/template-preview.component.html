@@ -128,47 +128,57 @@
         <div [class]="section.name + '-container'">
           <div [class]="section.name + '-content'">
             <ng-container *ngFor="let field of section.fields">
-              <div [ngSwitch]="field.type">
-                <!-- Champ texte -->
-                <p *ngSwitchCase="'text'">{{ getSectionFieldData(section.name, field.name) }}</p>
-                
-                <!-- Champ textarea -->
-                <p *ngSwitchCase="'textarea'" style="white-space: pre-wrap;">
-                  {{ getSectionFieldData(section.name, field.name) }}
-                </p>
-                
-                  <!-- Fichier (image ou autre) -->
-                  <div *ngSwitchCase="'file'" class="file-preview-container">
-                    <ng-container *ngIf="getSectionFieldData(section.name, field.name) as fileData">
-                      <ng-container *ngIf="fileData?.content">
-                        <!-- Si c'est une image -->
-                        <img *ngIf="fileData.type?.startsWith('image/')"
-                            [src]="fileData.content" 
-                            [alt]="field.label"
-                            (click)="openInNewTab(fileData.content)"
-                            style="cursor: pointer;">
-                        
-                        <!-- Si c'est un fichier (PDF, etc.) -->
-                        <a *ngIf="!fileData.type?.startsWith('image/')"
-                          [href]="fileData.content"
-                          [download]="fileData.name"
-                          class="file-link">
-                          Télécharger {{ fileData.name }}
-                        </a>
-                      </ng-container>
-                    </ng-container>
-                  </div>
-                
-                <!-- Dates -->
-                <p *ngSwitchCase="'date'" class="date">
-                  {{ formatDateRange(
-                      getSectionFieldData(section.name, 'startDate'),
-                      getSectionFieldData(section.name, 'endDate'),
-                      getSectionFieldData(section.name, 'current')
-                    ) }}
-                </p>
+              
+              <!-- 🔥 Affichage du texte -->
+              <p *ngIf="field.type === 'text' && getSectionFieldData(section.name, field.name)">
+                {{ getSectionFieldData(section.name, field.name) }}
+              </p>
+              
+              <!-- 🔥 Affichage du textarea -->
+              <p *ngIf="field.type === 'textarea' && getSectionFieldData(section.name, field.name)" 
+                style="white-space: pre-wrap;">
+                {{ getSectionFieldData(section.name, field.name) }}
+              </p>
+              
+              <!-- 🔥 Affichage du fichier/image -->
+              <div *ngIf="field.type === 'file' && getSectionFieldData(section.name, field.name) as fileData" 
+                  class="file-preview-container">
+                <ng-container *ngIf="fileData?.content">
+                  <!-- Si c'est une image -->
+                  <img *ngIf="fileData.type?.startsWith('image/')"
+                      [src]="fileData.content" 
+                      [alt]="field.label"
+                      (click)="openInNewTab(fileData.content)"
+                      style="cursor: pointer;">
+                  
+                  <!-- Si c'est un fichier (PDF, etc.) -->
+                  <a *ngIf="!fileData.type?.startsWith('image/')"
+                    [href]="fileData.content"
+                    [download]="fileData.name"
+                    class="file-link">
+                    📎 Télécharger {{ fileData.name }}
+                  </a>
+                </ng-container>
               </div>
+              
+              <!-- 🔥 Affichage d'UNE SEULE date (pas startDate/endDate) -->
+              <p *ngIf="field.type === 'date' && field.name === 'date' && getSectionFieldData(section.name, field.name)" 
+                class="date">
+                📅 {{ formatSingleDate(getSectionFieldData(section.name, field.name)) }}
+              </p>
+              
             </ng-container>
+            
+            <!-- 🔥 Affichage de la PÉRIODE (startDate + endDate) - UNE SEULE FOIS -->
+            <p *ngIf="getSectionFieldData(section.name, 'startDate') || getSectionFieldData(section.name, 'endDate')" 
+              class="date">
+              {{ formatDateRange(
+                  getSectionFieldData(section.name, 'startDate'),
+                  getSectionFieldData(section.name, 'endDate'),
+                  getSectionFieldData(section.name, 'current')
+                ) }}
+            </p>
+            
           </div>
         </div>
       </section>

@@ -4,6 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { SectionService } from '../../services/section.service';
+import { PortfolioService } from '../../services/portfolio.service';
+import { AuthService } from '../../services/auth.service';
 
 interface TemplateField {
   name: string;
@@ -51,7 +53,9 @@ export class TemplateEditorComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private http: HttpClient,
-    private sectionService: SectionService
+    private sectionService: SectionService,
+    private portfolioService: PortfolioService,
+    private authService: AuthService
   ) {}
 
 ngOnInit() {
@@ -536,5 +540,39 @@ private saveToLocalStorage() {
       }));
       }
     }
+  }
+
+  savePortfolio() {
+    if (!this.templateName) return;
+
+    const userId = this.authService.getCurrentUserId();
+    if (!userId) {
+      console.error('❌ Utilisateur non connecté');
+      return;
+    }
+
+    // ✅ Format correct pour le backend
+    const portfolioData = {
+      name: this.portfolioName || 'Mon Portfolio',
+      templateId: 1,  // ← ID du template (hardcodé pour l'instant)
+      link: 'https://monportfolio.com',
+      linkedin: 'https://linkedin.com/in/mon-profil',
+      jsonData: JSON.stringify(this.formData)  // ← Convertir en string JSON
+    };
+
+    console.log('🔵 Création portfolio pour user:', userId);
+    console.log('📦 Données:', portfolioData);
+
+    this.portfolioService.createPortfolio(userId, portfolioData).subscribe({
+      next: (response: any) => {
+        console.log('✅ Portfolio créé:', response);
+        this.router.navigate(['/myportfolio']);
+      },
+      error: (error: any) => {
+        console.error('❌ Erreur création:', error);
+        console.error('Détails:', error.error);
+        alert('Erreur lors de la sauvegarde du portfolio');
+      }
+    });
   }
 }

@@ -1,6 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from "@angular/router";
 import { CommonModule } from '@angular/common';
+import { PortfolioService } from '../services/portfolio.service';
+import { AuthService } from '../services/auth.service';
+
+interface Portfolio {
+  id: number;
+  name: string;
+  template: string;
+  data: any;
+}
 
 @Component({
   selector: 'myportfolio',
@@ -10,25 +19,40 @@ import { CommonModule } from '@angular/common';
   styleUrls: ['./myportfolio.component.scss']
 })
 export class MyportfolioComponent implements OnInit {
-  portfolios: any[] = [];
+  portfolios: Portfolio[] = [];
 
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    private portfolioService: PortfolioService,
+    private authService: AuthService
+  ) {}
 
   ngOnInit() {
     this.loadPortfolios();
   }
 
   loadPortfolios() {
-    this.portfolios = [];
-    for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i)!;
-      if (key.startsWith('portfolio_')) {
-        const saved = JSON.parse(localStorage.getItem(key)!);
-        this.portfolios.push({
-          name: key.replace('portfolio_', ''),
-          template: saved.template
-        });
-      }
+    const userId = this.authService.getCurrentUserId();
+    //logs pour debugger
+    const currentUser = this.authService.getCurrentUser();
+    console.log('🔍 User ID:', userId);
+    console.log('🔍 Current User:', currentUser);
+    console.log('🔍 LocalStorage user:', localStorage.getItem('user'));
+    //
+    if (userId) {
+      this.portfolioService.getPortfoliosByUser(userId).subscribe({
+        next: (portfolios: any) => {
+          console.log('Portfolios chargés:', portfolios);
+          this.portfolios = portfolios;
+        },
+        error: (error: any) => {
+          console.error('Erreur:', error);
+        }
+      });
+    } else {
+      console.error('Utilisateur non connecté');
+      // Rediriger vers login si nécessaire
+      this.router.navigate(['/login']);
     }
   }
 
@@ -36,28 +60,39 @@ export class MyportfolioComponent implements OnInit {
     this.router.navigate(['/templates']);
   }
 
-  editPortfolio(name: string, template: string) {
-    const saved = localStorage.getItem(`portfolio_${name}`);
-    if (!saved) return;
-    const parsed = JSON.parse(saved);
+  editPortfolio(id: number, template: string) {
+    const portfolio = this.portfolios.find(p => p.id === id);
+    if (!portfolio) return;
+
     this.router.navigate(['/creation/template-editor', template], {
-      state: { portfolioName: name, data: parsed.data }
+      state: { portfolioId: id, data: portfolio.data }
     });
   }
 
-  previewPortfolio(name: string, template: string) {
-    const saved = localStorage.getItem(`portfolio_${name}`);
-    if (!saved) return;
-    const parsed = JSON.parse(saved);
+  previewPortfolio(id: number, template: string) {
+    const portfolio = this.portfolios.find(p => p.id === id);
+    if (!portfolio) return;
+
     this.router.navigate(['/preview'], {
-      state: { template, data: parsed.data, portfolioName: name }
+      state: { template, data: portfolio.data, portfolioId: id }
     });
   }
 
-  deletePortfolio(name: string) {
+  deletePortfolio(id: number, name: string) {
     if (confirm(`Supprimer le portfolio "${name}" ?`)) {
-      localStorage.removeItem(`portfolio_${name}`);
-      this.loadPortfolios();
+      const userId = this.authService.getCurrentUserId();
+      if (userId) {
+        this.portfolioService.deletePortfolio(userId, id).subscribe({
+          next: () => {
+            console.log('Portfolio supprimé');
+            // Recharger la liste
+            this.loadPortfolios();
+          },
+          error: (error: any) => {
+            console.error('Erreur:', error);
+          }
+        });
+      }
     }
   }
 }

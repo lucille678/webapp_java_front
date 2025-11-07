@@ -13,9 +13,9 @@
       <p>Template : {{ p.template }}</p>
 
       <div class="actions">
-        <button (click)="editPortfolio(p.name, p.template)">✏️ Modifier</button>
-        <button (click)="previewPortfolio(p.name, p.template)">👁️ Voir</button>
-        <button (click)="deletePortfolio(p.name)">🗑️ Supprimer</button>
+        <button (click)="editPortfolio(p.id, p.template)">✏️ Modifier</button>
+        <button (click)="previewPortfolio(p.id, p.template)">👁️ Voir</button>
+        <button (click)="deletePortfolio(p.id, p.name)">🗑️ Supprimer</button>
       </div>
     </div>
   </div>

@@ -4,7 +4,7 @@ import { Observable, BehaviorSubject, tap, catchError, of } from 'rxjs';
 import { Router } from '@angular/router';
 
 export interface User {
-  id?: string;
+  id?: number;
   nom: string;
   prenom: string;
   email: string;
@@ -59,16 +59,17 @@ export class AuthService {
   }
 
   login(data: LoginData): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/login`, data)
-      .pipe(
-        tap(response => {
-          this.handleAuthSuccess(response);
-        }),
-        catchError(error => {
-          console.error('Erreur connexion:', error);
-          throw error;
-        })
-      );
+    console.log('🔵 Données envoyées:', JSON.stringify(data));
+    return this.http.post<AuthResponse>(`${this.apiUrl}/login`, data).pipe(
+      tap(response => {
+        console.log('✅ Réponse:', response);
+        this.handleAuthSuccess(response);
+      }),
+      catchError(error => {
+        console.error('❌ Erreur:', error);
+        throw error;
+      })
+    );
   }
 
   logout(): void {
@@ -98,6 +99,11 @@ export class AuthService {
     return this.currentUserSubject.value;
   }
 
+  getCurrentUserId(): number | null {
+    const user = this.getCurrentUser();
+    return user?.id ?? null;
+  }
+
   private hasToken(): boolean {
     return !!localStorage.getItem('token');
   }
@@ -117,7 +123,7 @@ export class AuthService {
 
   loginMock(email: string, password: string) {
     // Simule la connexion : n'importe quel email/mot de passe fonctionne
-    const user = { id: '1', nom: 'Test', prenom: 'User', email };
+    const user = { id: 1, nom: 'Test', prenom: 'User', email };
     localStorage.setItem('token', 'fake-token'); // faux token
     localStorage.setItem('user', JSON.stringify(user));
     this.isAuthenticatedSubject.next(true);

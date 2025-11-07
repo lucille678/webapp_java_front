@@ -35,7 +35,16 @@ export class LoginComponent {
     const { email, password } = this.loginForm.value;
 
     // Utilisation du mock pour tester sans BDD
-    this.auth.loginMock(email, password);
+    this.auth.login({ email, password }).subscribe({
+      next: (response: any) => {
+        console.log('✅ Connexion réussie:', response.user);
+        this.router.navigate(['/myportfolio']);
+      },
+      error: (error: any) => {
+        console.error('❌ Erreur login:', error);
+        alert('Email ou mot de passe incorrect');
+      }
+    });
 
     // Naviguer vers l'espace connecté (par exemple "creation")
     this.router.navigate(['/creation']);

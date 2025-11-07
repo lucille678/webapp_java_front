@@ -63,7 +63,7 @@ ngOnInit() {
   this.portfolioName = history.state.portfolioName || 'Sans nom';
 
   if (this.templateName) {
-    const savedCustomSections = localStorage.getItem(`customSections_${this.templateName}`);
+    const savedCustomSections = localStorage.getItem(`customSections_${this.portfolioName}`);
     if (savedCustomSections) {
       this.customSections = JSON.parse(savedCustomSections);
       this.customSections.forEach(section => section.open = false);
@@ -146,94 +146,100 @@ ngOnInit() {
     };
   }
 
-  createNewSection() {
-    if (this.newSection.name) {
-      // Créer la nouvelle section
-      const newSection: Section = {
-        name: this.newSection.name.toLowerCase(),
-        label: this.newSection.name,
-        fields: [],
-        open: false
-      };
+createNewSection() {
+  if (this.newSection.name) {
+    // Créer la nouvelle section
+    const newSection: Section = {
+      name: this.newSection.name.toLowerCase(),
+      label: this.newSection.name,
+      fields: [],
+      open: false
+    };
 
-      // Ajouter les champs selon les options sélectionnées
-      if (this.newSection.hasText) {
-        newSection.fields.push({
-          name: 'text',
-          label: 'Texte',
-          type: 'textarea'
-        });
-      }
-      if (this.newSection.hasImage) {
-        newSection.fields.push({
-          name: 'image',
-          label: 'Image',
-          type: 'file'
-        });
-      }
-      if (this.newSection.hasDate) {
-        newSection.fields.push({
-          name: 'date',
-          label: 'Date',
-          type: 'date'
-        });
-      }
-      if (this.newSection.hasPeriod) {
-        newSection.fields.push(
-          { name: 'startDate', label: 'Date de début', type: 'date' },
-          { name: 'endDate', label: 'Date de fin', type: 'date' }
-        );
-      }
-      if (this.newSection.hasFile) {
-        newSection.fields.push({
-          name: 'file',
-          label: 'Fichier',
-          type: 'file'
-        });
-      }
+    // Ajouter les champs selon les options sélectionnées
+    if (this.newSection.hasText) {
+      newSection.fields.push({
+        name: 'text',
+        label: 'Texte',
+        type: 'textarea'
+      });
+    }
+    if (this.newSection.hasImage) {
+      newSection.fields.push({
+        name: 'image',
+        label: 'Image',
+        type: 'file'
+      });
+    }
+    if (this.newSection.hasDate) {
+      newSection.fields.push({
+        name: 'date',
+        label: 'Date',
+        type: 'date'
+      });
+    }
+    if (this.newSection.hasPeriod) {
+      newSection.fields.push(
+        { name: 'startDate', label: 'Date de début', type: 'date' },
+        { name: 'endDate', label: 'Date de fin', type: 'date' }
+      );
+    }
+    if (this.newSection.hasFile) {
+      newSection.fields.push({
+        name: 'file',
+        label: 'Fichier',
+        type: 'file'
+      });
+    }
 
-      // Ajouter la section aux sections personnalisées
-      this.customSections.push(newSection);
+    // Ajouter la section aux sections personnalisées
+    this.customSections.push(newSection);
 
-      // Mettre à jour config.sections
-      if (this.config) {
-        this.config.sections = [...this.config.sections, newSection];
-      }
+    // Mettre à jour config.sections
+    if (this.config) {
+      this.config.sections = [...this.config.sections, newSection];
+    }
 
-      // Initialiser les données pour la nouvelle section
-      this.formData[newSection.name] = {};
+    // Initialiser les données pour la nouvelle section
+    this.formData[newSection.name] = {};
 
-      // Sauvegarder les sections personnalisées
-      if (this.templateName) {
-        localStorage.setItem(`portfolio_${this.portfolioName}`, JSON.stringify({
+    // 🔥 CORRECTION : Sauvegarder les sections personnalisées avec la bonne clé
+    if (this.templateName) {
+      // Sauvegarder les sections personnalisées séparément
+      localStorage.setItem(`customSections_${this.portfolioName}`, JSON.stringify(this.customSections));
+      
+      // Sauvegarder les données du portfolio
+      localStorage.setItem(`portfolio_${this.portfolioName}`, JSON.stringify({
         template: this.templateName,
         data: this.formData
-        }));
-      }
-
-      // Réinitialiser le formulaire
-      this.newSection = {
-        name: '',
-        hasText: false,
-        hasImage: false,
-        hasFile: false,
-        hasDate: false,
-        hasPeriod: false
-      };
+      }));
       
-      this.customSectionOpen = false;
+      console.log('✅ Sections personnalisées sauvegardées:', this.customSections);
     }
+
+    // Réinitialiser le formulaire
+    this.newSection = {
+      name: '',
+      hasText: false,
+      hasImage: false,
+      hasFile: false,
+      hasDate: false,
+      hasPeriod: false
+    };
+    
+    this.customSectionOpen = false;
   }
+}
 
   onFileChange(event: Event, sectionName: string, fieldName: string, index?: number) {
   const input = event.target as HTMLInputElement;
   if (!input.files?.length) return;
 
   const file = input.files[0];
-  
-  const maxSize = 2 * 1024 * 1024; // 2MB
+
+  const maxSize = 5 * 1024 * 1024; // 5MB
   if (file.size > maxSize) {
-    alert('Le fichier est trop volumineux. Taille maximale : 2MB');
+    alert('Le fichier est trop volumineux. Taille maximale : 5MB');
     input.value = ''; // Reset l'input
     return;
   }
@@ -396,9 +402,9 @@ private saveToLocalStorage() {
     if (!file) return;
     
     // Vérifier la taille
-    const maxSize = 2 * 1024 * 1024; // 2MB
+    const maxSize = 5 * 1024 * 1024; // 5MB
     if (file.size > maxSize) {
-      alert('Le fichier est trop volumineux. Taille maximale : 2MB');
+      alert('Le fichier est trop volumineux. Taille maximale : 5MB');
       event.target.value = '';
       return;
     }
@@ -427,25 +433,32 @@ private saveToLocalStorage() {
   }
 
   onSubmit() {
-    if (!this.templateName) return;
-    
-    // Save to localStorage
-    localStorage.setItem(`portfolio_${this.portfolioName}`, JSON.stringify({
+  if (!this.templateName) return;
+  
+  console.log('📤 Soumission du formulaire');
+  console.log('  - Portfolio:', this.portfolioName);
+  console.log('  - Template:', this.templateName);
+  console.log('  - Sections personnalisées:', this.customSections);
+  console.log('  - FormData:', this.formData);
+  
+  // Save to localStorage
+  localStorage.setItem(`portfolio_${this.portfolioName}`, JSON.stringify({
     template: this.templateName,
     data: this.formData
-    }));
+  }));
 
+  // Sauvegarder aussi les sections personnalisées
+  localStorage.setItem(`customSections_${this.portfolioName}`, JSON.stringify(this.customSections));
 
-    // Navigate to preview with data
-    this.router.navigate(['/preview'], {
-      state: { 
-        data: this.formData, 
-        template: this.templateName,
-        portfolioName: this.portfolioName
-      }
-    });
-
-  }
+  // Navigate to preview with data
+  this.router.navigate(['/preview'], {
+    state: { 
+      data: this.formData, 
+      template: this.templateName,
+      portfolioName: this.portfolioName
+    }
+  });
+}
 
   showNewSectionDialog() {
     this.showDialog = true;

@@ -9,11 +9,13 @@
         <span></span>
       </button>
       <ul class="nav-links" [class.mobile-open]="mobileMenuOpen">
-        <li *ngFor="let section of sections"
-            [class.active]="activeSection === section.id"
-            (click)="scrollToSection(section.id)">
-          {{ section.label }}
-        </li>
+        <ng-container *ngFor="let section of sections">
+          <li *ngIf="section.id !== 'contact'"
+              [class.active]="activeSection === section.id"
+              (click)="scrollToSection(section.id)">
+            {{ section.label }}
+          </li>
+        </ng-container>
       </ul>
       <div class="nav-actions">
         <button class="edit-btn" (click)="goBackToEdit()">Modifier</button>
@@ -90,15 +92,26 @@
           <div class="certificates-container">
             <div class="certificate-item" *ngFor="let cert of data?.competences?.certificates || []">
               <span>{{ cert?.name }}</span>
-              <a *ngIf="cert?.file?.content"
-                 [href]="cert?.file?.content"
-                 target="_blank"
-                 class="certificate-link">
-                Voir le certificat
-              </a>
+
+              <ng-container *ngIf="cert?.file">
+                <!-- Si c'est une image, l'afficher -->
+                <img *ngIf="cert.file?.type?.startsWith('image/')"
+                    [src]="cert.file?.content"
+                    [alt]="cert.name"
+                    class="certificate-preview"
+                    (click)="openInNewTab(cert.file?.content)">
+                
+                <!-- Lien de téléchargement -->
+                <a [href]="cert.file?.content"
+                  [download]="cert.file?.name || cert.name"
+                  class="certificate-link">
+                  {{ cert.file?.type?.startsWith('image/') ? 'Voir l\'image' : 'Télécharger' }}
+                </a>
+              </ng-container>
             </div>
           </div>
         </div>
+
 
         <!-- Catégories personnalisées -->
         <div class="competence-card" *ngFor="let category of data?.competences?.customCategories || []">
@@ -116,17 +129,43 @@
           <div [class]="section.name + '-content'">
             <ng-container *ngFor="let field of section.fields">
               <div [ngSwitch]="field.type">
+                <!-- Champ texte -->
                 <p *ngSwitchCase="'text'">{{ getSectionFieldData(section.name, field.name) }}</p>
-                <p *ngSwitchCase="'textarea'">{{ getSectionFieldData(section.name, field.name) }}</p>
-                <img *ngSwitchCase="'file'" 
-                     [src]="getSectionFieldData(section.name, field.name)?.content" 
-                     [alt]="field.label">
+                
+                <!-- Champ textarea -->
+                <p *ngSwitchCase="'textarea'" style="white-space: pre-wrap;">
+                  {{ getSectionFieldData(section.name, field.name) }}
+                </p>
+                
+                  <!-- Fichier (image ou autre) -->
+                  <div *ngSwitchCase="'file'" class="file-preview-container">
+                    <ng-container *ngIf="getSectionFieldData(section.name, field.name) as fileData">
+                      <ng-container *ngIf="fileData?.content">
+                        <!-- Si c'est une image -->
+                        <img *ngIf="fileData.type?.startsWith('image/')"
+                            [src]="fileData.content" 
+                            [alt]="field.label"
+                            (click)="openInNewTab(fileData.content)"
+                            style="cursor: pointer;">
+                        
+                        <!-- Si c'est un fichier (PDF, etc.) -->
+                        <a *ngIf="!fileData.type?.startsWith('image/')"
+                          [href]="fileData.content"
+                          [download]="fileData.name"
+                          class="file-link">
+                          Télécharger {{ fileData.name }}
+                        </a>
+                      </ng-container>
+                    </ng-container>
+                  </div>
+                
+                <!-- Dates -->
                 <p *ngSwitchCase="'date'" class="date">
                   {{ formatDateRange(
-                       getSectionFieldData(section.name, 'startDate'),
-                       getSectionFieldData(section.name, 'endDate'),
-                       getSectionFieldData(section.name, 'current')
-                     ) }}
+                      getSectionFieldData(section.name, 'startDate'),
+                      getSectionFieldData(section.name, 'endDate'),
+                      getSectionFieldData(section.name, 'current')
+                    ) }}
                 </p>
               </div>
             </ng-container>
@@ -139,7 +178,7 @@
   <!-- Footer Contact -->
   <footer id="contact" *ngIf="data?.contact">
     <div class="footer-content">
-      <div class="footer-section" *ngIf="data?.contact?.email || data?.contact?.phone">
+      <div class="footer-section" *ngIf="data?.contact?.email || data?.contact?.phone || data?.contact?.address">
         <h3>Contact</h3>
         <div class="contact-info">
           <a *ngIf="data?.contact?.email" [href]="'mailto:' + data?.contact?.email" class="contact-item">
@@ -147,11 +186,11 @@
             <span>{{ data?.contact?.email }}</span>
           </a>
           <a *ngIf="data?.contact?.phone" [href]="'tel:' + data?.contact?.phone" class="contact-item">
-            <span>📞</span>
+            <img src="assets/icons/phone.png" alt="Téléphone" class="contact-icon">
             <span>{{ data?.contact?.phone }}</span>
           </a>
           <div *ngIf="data?.contact?.address" class="contact-item">
-            <span>📍</span>
+            <img src="assets/icons/location.png" alt="Adresse" class="contact-icon">
             <span>{{ data?.contact?.address }}</span>
           </div>
         </div>
@@ -159,17 +198,23 @@
 
       <div class="footer-section" *ngIf="data?.contact?.linkedin || data?.contact?.github || data?.contact?.twitter">
         <h3>Réseaux sociaux</h3>
-        <div class="social-links">
-          <a *ngIf="data?.contact?.linkedin" [href]="data?.contact?.linkedin" target="_blank" class="social-link" title="LinkedIn">
-            <span>in</span>
+          <a *ngIf="data?.contact?.linkedin"
+            [href]="getValidUrl(data?.contact?.linkedin || '')"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="social-link"
+            title="LinkedIn">
+            <img src="assets/icons/linkedin.svg" alt="LinkedIn">
           </a>
-          <a *ngIf="data?.contact?.github" [href]="data?.contact?.github" target="_blank" class="social-link" title="GitHub">
-            <span>GH</span>
+
+          <a *ngIf="data?.contact?.github"
+            [href]="getValidUrl(data?.contact?.github || '')"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="social-link"
+            title="GitHub">
+            <img src="assets/icons/github.svg" alt="GitHub">
           </a>
-          <a *ngIf="data?.contact?.twitter" [href]="data?.contact?.twitter" target="_blank" class="social-link" title="Twitter">
-            <span>𝕏</span>
-          </a>
-        </div>
       </div>
     </div>
 

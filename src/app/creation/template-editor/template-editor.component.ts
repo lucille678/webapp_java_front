@@ -209,8 +209,7 @@ createNewSection() {
         template: this.templateName,
         data: this.formData
       }));
-      
-      console.log('✅ Sections personnalisées sauvegardées:', this.customSections);
+    
     }
 
     // Réinitialiser le formulaire
@@ -233,9 +232,9 @@ createNewSection() {
 
   const file = input.files[0];
 
-  const maxSize = 5 * 1024 * 1024; // 5MB
+  const maxSize = 7 * 1024 * 1024; // 7MB
   if (file.size > maxSize) {
-    alert('Le fichier est trop volumineux. Taille maximale : 5MB');
+    alert('Le fichier est trop volumineux. Taille maximale : 7MB');
     input.value = ''; // Reset l'input
     return;
   }
@@ -281,41 +280,45 @@ createNewSection() {
 }
 
 // Nouvelle méthode pour compresser les images
-private compressImage(file: File, callback: (dataUrl: string) => void) {
-  const reader = new FileReader();
-  reader.onload = (e: any) => {
-    const img = new Image();
-    img.onload = () => {
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d')!;
-      
-      // Redimensionner si l'image est trop grande
-      let width = img.width;
-      let height = img.height;
-      const maxDimension = 1200; // Largeur/hauteur max
-      
-      if (width > maxDimension || height > maxDimension) {
-        if (width > height) {
-          height = (height / width) * maxDimension;
-          width = maxDimension;
-        } else {
-          width = (width / height) * maxDimension;
-          height = maxDimension;
+  // 🔥 Compression d'images AMÉLIORÉE
+  private compressImage(file: File, callback: (dataUrl: string) => void) {
+    const reader = new FileReader();
+    reader.onload = (e: any) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d')!;
+        
+        // 🔥 Redimensionnement plus agressif
+        let width = img.width;
+        let height = img.height;
+        const maxDimension = 800; // Réduit de 1200 à 800px
+        
+        if (width > maxDimension || height > maxDimension) {
+          if (width > height) {
+            height = (height / width) * maxDimension;
+            width = maxDimension;
+          } else {
+            width = (width / height) * maxDimension;
+            height = maxDimension;
+          }
         }
-      }
-      
-      canvas.width = width;
-      canvas.height = height;
-      ctx.drawImage(img, 0, 0, width, height);
-      
-      // Compresser avec qualité 0.7
-      const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.7);
-      callback(compressedDataUrl);
+        
+        canvas.width = width;
+        canvas.height = height;
+        ctx.drawImage(img, 0, 0, width, height);
+        
+        const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.5);
+        
+        const sizeInBytes = (compressedDataUrl.length * 3) / 4;
+        const sizeInMB = sizeInBytes / (1024 * 1024);
+        
+        callback(compressedDataUrl);
+      };
+      img.src = e.target.result;
     };
-    img.src = e.target.result;
-  };
-  reader.readAsDataURL(file);
-}
+    reader.readAsDataURL(file);
+  }
 
 // Nouvelle méthode pour sauvegarder avec gestion d'erreur
 private saveToLocalStorage() {
@@ -398,9 +401,9 @@ private saveToLocalStorage() {
     if (!file) return;
     
     // Vérifier la taille
-    const maxSize = 5 * 1024 * 1024; // 5MB
+    const maxSize = 7 * 1024 * 1024; // 7MB
     if (file.size > maxSize) {
-      alert('Le fichier est trop volumineux. Taille maximale : 5MB');
+      alert('Le fichier est trop volumineux. Taille maximale : 7MB');
       event.target.value = '';
       return;
     }
@@ -430,12 +433,6 @@ private saveToLocalStorage() {
 
   onSubmit() {
   if (!this.templateName) return;
-  
-  console.log('📤 Soumission du formulaire');
-  console.log('  - Portfolio:', this.portfolioName);
-  console.log('  - Template:', this.templateName);
-  console.log('  - Sections personnalisées:', this.customSections);
-  console.log('  - FormData:', this.formData);
   
   // Save to localStorage
   localStorage.setItem(`portfolio_${this.portfolioName}`, JSON.stringify({

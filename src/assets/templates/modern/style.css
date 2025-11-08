@@ -109,7 +109,7 @@ background: transparent;
   object-fit: cover;
   border-radius: 12px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-  flex-shrink: 0; /* empêche l'image de se réduire trop */
+  flex-shrink: 0; 
 }
 
 .intro-content {

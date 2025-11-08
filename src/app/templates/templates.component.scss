@@ -4,8 +4,9 @@
 
   h1 {
     font-size: 2rem;
+    font-family: "BBH Sans Hegarty", sans-serif;
     margin-bottom: 2rem;
-    color: #333;
+    color: #6c0210;
   }
 }
 
@@ -21,7 +22,7 @@
   border-radius: 16px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   overflow: hidden;
-  width: 280px;
+  width: 320px;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   cursor: pointer;
 

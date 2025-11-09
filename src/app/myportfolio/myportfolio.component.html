@@ -9,13 +9,21 @@
 
   <div class="portfolio-list" *ngIf="portfolios.length > 0">
     <div class="portfolio-card" *ngFor="let p of portfolios">
-      <h3>{{ p.name }}</h3>
-      <p>Template : {{ p.template }}</p>
-
+      <h3>{{ p.namePortfolio }}</h3>
+      <p>Template : {{ p.templateName }}</p>
+      <p class="date-info">Créé le: {{ p.creationDate | date:'dd/MM/yyyy' }}</p>
       <div class="actions">
-        <button (click)="editPortfolio(p.id, p.template)">✏️ Modifier</button>
-        <button (click)="previewPortfolio(p.id, p.template)">👁️ Voir</button>
-        <button (click)="deletePortfolio(p.id, p.name)">🗑️ Supprimer</button>
+        <button (click)="editPortfolio(p)" class="edit-btn">
+          ✏️ Modifier
+        </button>
+        
+        <button (click)="previewPortfolio(p)" class="view-btn">
+          👁️ Voir
+        </button>
+        
+        <button (click)="deletePortfolio(p)" class="delete-btn">
+          🗑️ Supprimer
+        </button>
       </div>
     </div>
   </div>

@@ -5,10 +5,14 @@ import { PortfolioService } from '../services/portfolio.service';
 import { AuthService } from '../services/auth.service';
 
 interface Portfolio {
-  id: number;
-  name: string;
-  template: string;
-  data: any;
+  idPortfolio: number;
+  namePortfolio: string;
+  templateName: string;
+  jsonData: string;
+  link?: string;
+  linkedin?: string;
+  creationDate?: string;
+  editionDate?: string;
 }
 
 @Component({
@@ -33,25 +37,20 @@ export class MyportfolioComponent implements OnInit {
 
   loadPortfolios() {
     const userId = this.authService.getCurrentUserId();
-    //logs pour debugger
-    const currentUser = this.authService.getCurrentUser();
     console.log('🔍 User ID:', userId);
-    console.log('🔍 Current User:', currentUser);
-    console.log('🔍 LocalStorage user:', localStorage.getItem('user'));
-    //
+    
     if (userId) {
       this.portfolioService.getPortfoliosByUser(userId).subscribe({
         next: (portfolios: any) => {
-          console.log('Portfolios chargés:', portfolios);
+          console.log('✅ Portfolios chargés:', portfolios);
           this.portfolios = portfolios;
         },
         error: (error: any) => {
-          console.error('Erreur:', error);
+          console.error('❌ Erreur:', error);
         }
       });
     } else {
-      console.error('Utilisateur non connecté');
-      // Rediriger vers login si nécessaire
+      console.error('❌ Utilisateur non connecté');
       this.router.navigate(['/login']);
     }
   }
@@ -60,36 +59,56 @@ export class MyportfolioComponent implements OnInit {
     this.router.navigate(['/templates']);
   }
 
-  editPortfolio(id: number, template: string) {
-    const portfolio = this.portfolios.find(p => p.id === id);
-    if (!portfolio) return;
-
-    this.router.navigate(['/creation/template-editor', template], {
-      state: { portfolioId: id, data: portfolio.data }
-    });
+  editPortfolio(portfolio: Portfolio) {
+    console.log('🔧 Édition portfolio:', portfolio);
+    
+    try {
+      const data = JSON.parse(portfolio.jsonData || '{}');
+      
+      this.router.navigate(['/creation/template-editor', portfolio.templateName], {
+        state: { 
+          portfolioId: portfolio.idPortfolio,
+          portfolioName: portfolio.namePortfolio,
+          data: data
+        }
+      });
+    } catch (error) {
+      console.error('❌ Erreur parsing JSON:', error);
+      alert('Erreur lors du chargement du portfolio');
+    }
   }
 
-  previewPortfolio(id: number, template: string) {
-    const portfolio = this.portfolios.find(p => p.id === id);
-    if (!portfolio) return;
-
-    this.router.navigate(['/preview'], {
-      state: { template, data: portfolio.data, portfolioId: id }
-    });
+  previewPortfolio(portfolio: Portfolio) {
+    console.log('👁️ Aperçu portfolio:', portfolio);
+    
+    try {
+      const data = JSON.parse(portfolio.jsonData || '{}');
+      
+      this.router.navigate(['/preview'], {
+        state: { 
+          portfolioId: portfolio.idPortfolio,
+          portfolioName: portfolio.namePortfolio,
+          template: portfolio.templateName,
+          data: data
+        }
+      });
+    } catch (error) {
+      console.error('❌ Erreur parsing JSON:', error);
+      alert('Erreur lors du chargement du portfolio');
+    }
   }
 
-  deletePortfolio(id: number, name: string) {
-    if (confirm(`Supprimer le portfolio "${name}" ?`)) {
+  deletePortfolio(portfolio: Portfolio) {
+    if (confirm(`Supprimer le portfolio "${portfolio.namePortfolio}" ?`)) {
       const userId = this.authService.getCurrentUserId();
       if (userId) {
-        this.portfolioService.deletePortfolio(userId, id).subscribe({
+        this.portfolioService.deletePortfolio(userId, portfolio.idPortfolio).subscribe({
           next: () => {
-            console.log('Portfolio supprimé');
-            // Recharger la liste
+            console.log('✅ Portfolio supprimé');
             this.loadPortfolios();
           },
           error: (error: any) => {
-            console.error('Erreur:', error);
+            console.error('❌ Erreur:', error);
           }
         });
       }

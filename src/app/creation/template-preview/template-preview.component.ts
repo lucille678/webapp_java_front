@@ -291,6 +291,20 @@ ngOnInit(): void {
     alert('Fonctionnalité de publication à venir !');
   }
 
+  formatSingleDate(date: string): string {
+    if (!date) return '';
+    
+    try {
+      const d = new Date(date);
+      if (isNaN(d.getTime())) return '';
+      const month = d.toLocaleDateString('fr-FR', { month: 'long' });
+      const year = d.getFullYear();
+      return `${month.charAt(0).toUpperCase() + month.slice(1)} ${year}`;
+    } catch {
+      return date;
+    }
+  }
+
   formatDateRange(startDate: string, endDate: string, current?: boolean): string {
     if (!startDate) return '';
 
@@ -361,6 +375,4 @@ ngOnInit(): void {
   }
   return url;
 }
-
-
 }

@@ -88,44 +88,36 @@ background: transparent;
 #accueil {
   min-height: 100vh;
   display: flex;
-  align-items: center;
   justify-content: center;
-  padding: 8rem 2rem;
-  position: relative;
-  margin: 0;
+  padding: 10rem 2rem 6rem; /* espace en haut pour la navbar */
   background: linear-gradient(135deg, #3a3a3a 0%, #0a0a0a 100%);
 }
 
 .header-content {
-  display: grid;
-  grid-template-columns: 200px 1fr;
-  gap: 3rem;
-  max-width: 1000px;
-  width: 100%;
+  display: flex;
+  flex-direction: row;
   align-items: center;
-}
-
-.profile-content img {
-  width: 180px !important;
-  height: 180px !important;
-  max-width: 180px !important;
-  border-radius: 50%;
-  object-fit: cover;
-  box-shadow: 15px 15px 40px rgba(0, 0, 0, 0.15);
-  border: 4px solid white;
+  justify-content: flex-start;
+  gap: 4rem;
+  max-width: 1100px;
+  width: 100%;
 }
 
 .header-content img {
-  width: 330px;
-  height: 430px;
+  width: 320px;
+  height: 420px;
   object-fit: cover;
-  border-radius: 9px;
+  border-radius: 12px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  flex-shrink: 0; 
 }
 
 .intro-content {
   flex: 1;
-  min-width: 300px;
+  min-width: 350px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .intro-content h1 {
@@ -145,21 +137,52 @@ background: transparent;
 .bio {
   font-size: 1rem;
   color: #ccc;
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
   line-height: 1.6;
 }
 
 .location {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1.5rem;
+  gap: 0.6rem;
+  padding: 0.6rem 1.2rem;
   background: rgba(78, 205, 196, 0.1);
   border: 1px solid #4ECDC4;
   border-radius: 50px;
   color: #4ECDC4;
   font-size: 0.9rem;
 }
+
+/* ---------------- RESPONSIVE ---------------- */
+@media (max-width: 968px) {
+  #accueil {
+    padding: 8rem 1.5rem 4rem;
+  }
+
+  .header-content {
+    flex-direction: column;
+    text-align: center;
+    gap: 2rem;
+  }
+
+  .header-content img {
+    width: 250px;
+    height: 320px;
+  }
+
+  .intro-content h1 {
+    font-size: 2.2rem;
+  }
+
+  .objective {
+    font-size: 1.1rem;
+  }
+
+  .bio {
+    font-size: 0.95rem;
+  }
+}
+
 
 /* ===============================
    🌟 FORMATIONS & EXPÉRIENCES

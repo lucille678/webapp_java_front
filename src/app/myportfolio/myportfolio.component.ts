@@ -3,6 +3,8 @@ import { Router } from "@angular/router";
 import { CommonModule } from '@angular/common';
 import { PortfolioService } from '../services/portfolio.service';
 import { AuthService } from '../services/auth.service';
+import { ActivatedRoute } from '@angular/router';
+
 
 interface Portfolio {
   idPortfolio: number;
@@ -22,17 +24,21 @@ interface Portfolio {
   templateUrl: './myportfolio.component.html',
   styleUrls: ['./myportfolio.component.scss']
 })
+
+
 export class MyportfolioComponent implements OnInit {
   portfolios: Portfolio[] = [];
 
   constructor(
     private router: Router,
     private portfolioService: PortfolioService,
-    private authService: AuthService
+    private authService: AuthService,
+    private route: ActivatedRoute,
   ) {}
 
   ngOnInit() {
     this.loadPortfolios();
+       
   }
 
   loadPortfolios() {
@@ -67,6 +73,7 @@ export class MyportfolioComponent implements OnInit {
       
       this.router.navigate(['/creation/template-editor', portfolio.templateName], {
         state: { 
+          isEditMode: true,
           portfolioId: portfolio.idPortfolio,
           portfolioName: portfolio.namePortfolio,
           data: data

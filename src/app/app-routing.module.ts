@@ -19,6 +19,7 @@ const routes: Routes = [
   { path: 'myportfolio', component: MyportfolioComponent},
   { path: 'templates', component: TemplatesComponent},
   { path: 'creation/template-editor/:templateName', component: TemplateEditorComponent},
+  { path: 'creation/edit-portfolio/:id', component: TemplateEditorComponent},
   { path: 'preview', component: TemplatePreviewComponent },
   { path: '**', redirectTo: ''}
 ]

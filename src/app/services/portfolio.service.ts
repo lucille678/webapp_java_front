@@ -41,4 +41,7 @@ export class PortfolioService {
         })
       );
   }
+  getPortfolioById(id: number): Observable<any> {
+  return this.http.get(`http://localhost:8080/portfolios/${id}`);
+}
 }

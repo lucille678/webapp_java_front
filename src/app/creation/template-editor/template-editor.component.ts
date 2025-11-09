@@ -62,17 +62,47 @@ export class TemplateEditorComponent implements OnInit {
 
 ngOnInit() {
   this.templateName = this.route.snapshot.paramMap.get('templateName');
-  this.portfolioName = history.state.portfolioName || 'Sans nom';
-
-  if (this.templateName) {
+  
+  // ✅ Récupérer les données du state (édition ou création)
+  const navigation = this.router.getCurrentNavigation();
+  const state = navigation?.extras.state || history.state;
+  
+  console.log('📋 State reçu:', state);
+  
+  if (state && state.isEditMode) {
+    // ✅ MODE ÉDITION
+    console.log('🔧 Mode édition détecté');
+    this.portfolioName = state.portfolioName || 'Sans nom';
+    this.formData = state.data || {};
+    
+    // Charger les sections personnalisées si elles existent
     const savedCustomSections = localStorage.getItem(`customSections_${this.portfolioName}`);
     if (savedCustomSections) {
       this.customSections = JSON.parse(savedCustomSections);
       this.customSections.forEach(section => section.open = false);
     }
-
+  } else {
+    // ✅ MODE CRÉATION
+    console.log('➕ Mode création détecté');
+    this.portfolioName = state.portfolioName || 'Sans nom';
+    
+    // Charger depuis localStorage si disponible
     const savedData = localStorage.getItem(`portfolio_${this.portfolioName}`);
+    const savedCustomSections = localStorage.getItem(`customSections_${this.portfolioName}`);
+    
+    if (savedCustomSections) {
+      this.customSections = JSON.parse(savedCustomSections);
+      this.customSections.forEach(section => section.open = false);
+    }
+    
+    if (savedData) {
+      const parsed = JSON.parse(savedData);
+      this.formData = parsed.data || {};
+    }
+  }
 
+  // Charger la configuration du template
+  if (this.templateName) {
     this.http.get(`assets/templates/${this.templateName}/config.json`)
       .subscribe({
         next: (data: any) => {
@@ -85,24 +115,24 @@ ngOnInit() {
             });
           }
           
+          // Ajouter les sections personnalisées
           if (this.customSections.length > 0 && this.config) {
-            this.config.sections = [...(this.config.sections || []), ...this.customSections];
+            this.config.sections = [...this.config.sections, ...this.customSections];
           }
 
-          if (savedData) {
-            const parsed = JSON.parse(savedData);
-            this.formData = parsed.data || {};
-          } else {
+          // Si pas de formData, l'initialiser
+          if (!this.formData || Object.keys(this.formData).length === 0) {
             this.formData = this.initializeFormData();
           }
 
+          // S'assurer que contact existe
           if (!this.formData.contact) {
             this.initializeContactData();
           }
 
-          console.log('FormData initialisé pour', this.portfolioName, ':', this.formData);
+          console.log('✅ FormData chargé:', this.formData);
         },
-        error: (error) => console.error('Error loading config:', error)
+        error: (error) => console.error('❌ Error loading config:', error)
       });
   }
 }
@@ -560,36 +590,41 @@ private saveToLocalStorage() {
     const userId = this.authService.getCurrentUserId();
     if (!userId) {
       console.error('❌ Utilisateur non connecté');
+      alert('Vous devez être connecté pour sauvegarder');
       return;
     }
 
-    //generer un lien unique
+    // Générer un lien unique
     const timestamp = Date.now();
     const portfolioSlug = this.portfolioName.toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-')  // Remplacer les caractères spéciaux par des tirets
+      .replace(/[^a-z0-9]+/g, '-')
       .replace(/(^-|-$)/g, '');
 
-    // ✅ Format correct pour le backend
     const portfolioData = {
-      name: this.portfolioName || 'Mon Portfolio',
+      name: this.portfolioName,
       templateName: this.templateName,
       link: `https://portfolio-${userId}-${portfolioSlug}-${timestamp}.com`,
       linkedin: 'https://linkedin.com/in/mon-profil',
-      jsonData: JSON.stringify(this.formData)  // ← Convertir en string JSON
+      jsonData: JSON.stringify(this.formData)
     };
 
-    console.log('🔵 Création portfolio pour user:', userId);
-    console.log('📦 Données:', portfolioData);
+    console.log('🔵 Sauvegarde portfolio:', portfolioData);
 
+    // ✅ Créer ou mettre à jour selon le contexte
     this.portfolioService.createPortfolio(userId, portfolioData).subscribe({
       next: (response: any) => {
-        console.log('✅ Portfolio créé:', response);
+        console.log('✅ Portfolio sauvegardé:', response);
+        alert('Portfolio sauvegardé avec succès !');
+        
+        // Nettoyer le localStorage après sauvegarde
+        localStorage.removeItem(`portfolio_${this.portfolioName}`);
+        localStorage.removeItem(`customSections_${this.portfolioName}`);
+        
         this.router.navigate(['/myportfolio']);
       },
       error: (error: any) => {
-        console.error('❌ Erreur création:', error);
-        console.error('Détails:', error.error);
-        alert('Erreur lors de la sauvegarde du portfolio');
+        console.error('❌ Erreur:', error);
+        alert('Erreur lors de la sauvegarde');
       }
     });
   }

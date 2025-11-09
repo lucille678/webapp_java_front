@@ -1,6 +1,23 @@
 <div class="editor" *ngIf="config">
   <h1>{{ config.title }}</h1>
 
+  <!-- Dialog/Popup pour le nom -->
+  <div *ngIf="showSavePopup" class="dialog-overlay" (click)="closeSaveDialog()">
+    <div class="dialog-content" (click)="$event.stopPropagation()">
+      <h2>Nommer votre portfolio</h2>
+      <input 
+        type="text" 
+        [(ngModel)]="portfolioNameInput" 
+        placeholder="Nom du portfolio"
+        class="portfolio-name-input"
+      >
+      <div class="dialog-actions">
+        <button (click)="closeSaveDialog()" class="cancel-btn">Annuler</button>
+        <button (click)="confirmSave()" class="save-btn">Sauvegarder</button>
+      </div>
+    </div>
+  </div>
+
   <form (ngSubmit)="onSubmit()">
     <ng-container *ngFor="let section of config.sections">
       <div class="section">
@@ -325,5 +342,6 @@
 
     <!-- Bouton de soumission -->
     <button type="submit" class="submit-btn">Voir mon portfolio</button>
+    <button type="button" class="save-btn" (click)="showSaveDialog()">Sauvegarder le portfolio</button>
   </form>
 </div>

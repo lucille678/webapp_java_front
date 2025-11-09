@@ -48,6 +48,8 @@ export class TemplateEditorComponent implements OnInit {
   };
   customSections: Section[] = [];
   showDialog = false;
+  showSavePopup = false;
+  portfolioNameInput = '';
 
   constructor(
     private route: ActivatedRoute,
@@ -567,7 +569,7 @@ private saveToLocalStorage() {
     // ✅ Format correct pour le backend
     const portfolioData = {
       name: this.portfolioName || 'Mon Portfolio',
-      templateId: 1,  // ← ID du template (hardcodé pour l'instant)
+      templateName: this.templateName,
       link: 'https://monportfolio.com',
       linkedin: 'https://linkedin.com/in/mon-profil',
       jsonData: JSON.stringify(this.formData)  // ← Convertir en string JSON
@@ -588,4 +590,26 @@ private saveToLocalStorage() {
       }
     });
   }
+
+  showSaveDialog() {
+    this.portfolioNameInput = this.portfolioName || '';
+    this.showSavePopup = true;
+  }
+
+  closeSaveDialog() {
+    this.showSavePopup = false;
+  }
+
+  confirmSave() {
+    if (!this.portfolioNameInput.trim()) {
+      alert('Veuillez entrer un nom pour votre portfolio');
+      return;
+    }
+
+    this.portfolioName = this.portfolioNameInput.trim();
+    this.showSavePopup = false;
+    this.savePortfolio();
+  }
+  
+
 }

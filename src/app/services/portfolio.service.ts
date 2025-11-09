@@ -41,7 +41,24 @@ export class PortfolioService {
         })
       );
   }
+
   getPortfolioById(id: number): Observable<any> {
-  return this.http.get(`http://localhost:8080/portfolios/${id}`);
-}
+    return this.http.get(`http://localhost:8080/portfolios/${id}`);
+    }
+
+  updatePortfolio(userId: number, portfolioId: number, portfolioData: any): Observable<any> {
+    const headers = this.authService.getAuthHeaders();
+    console.log('🔄 PUT:', `${this.baseUrl}/${userId}/portfolios/${portfolioId}`);
+    
+    return this.http.put(
+        `${this.baseUrl}/${userId}/portfolios/${portfolioId}`, 
+        portfolioData, 
+        { headers }
+    ).pipe(
+        catchError(error => {
+        console.error('❌ Erreur mise à jour portfolio:', error);
+        throw error;
+        })
+    );
+    }
 }

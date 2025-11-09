@@ -32,6 +32,7 @@ interface Section {
   ],
   styleUrls: ['./template-editor.component.scss']
 })
+
 export class TemplateEditorComponent implements OnInit {
   templateName: string | null = null;
   portfolioName: string = '';
@@ -50,6 +51,8 @@ export class TemplateEditorComponent implements OnInit {
   showDialog = false;
   showSavePopup = false;
   portfolioNameInput = '';
+  portfolioId: number | null = null; 
+  isEditMode: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -63,7 +66,7 @@ export class TemplateEditorComponent implements OnInit {
 ngOnInit() {
   this.templateName = this.route.snapshot.paramMap.get('templateName');
   
-  // ✅ Récupérer les données du state (édition ou création)
+  // ✅ Récupérer les données du state
   const navigation = this.router.getCurrentNavigation();
   const state = navigation?.extras.state || history.state;
   
@@ -72,10 +75,12 @@ ngOnInit() {
   if (state && state.isEditMode) {
     // ✅ MODE ÉDITION
     console.log('🔧 Mode édition détecté');
+    this.isEditMode = true;
+    this.portfolioId = state.portfolioId;
     this.portfolioName = state.portfolioName || 'Sans nom';
     this.formData = state.data || {};
     
-    // Charger les sections personnalisées si elles existent
+    // Charger les sections personnalisées
     const savedCustomSections = localStorage.getItem(`customSections_${this.portfolioName}`);
     if (savedCustomSections) {
       this.customSections = JSON.parse(savedCustomSections);
@@ -84,6 +89,8 @@ ngOnInit() {
   } else {
     // ✅ MODE CRÉATION
     console.log('➕ Mode création détecté');
+    this.isEditMode = false;
+    this.portfolioId = null;
     this.portfolioName = state.portfolioName || 'Sans nom';
     
     // Charger depuis localStorage si disponible
@@ -108,24 +115,20 @@ ngOnInit() {
         next: (data: any) => {
           this.config = data;
           
-          // Initialiser toutes les sections à fermées
           if (this.config?.sections) {
             this.config.sections.forEach(section => {
               section.open = false;
             });
           }
           
-          // Ajouter les sections personnalisées
           if (this.customSections.length > 0 && this.config) {
             this.config.sections = [...this.config.sections, ...this.customSections];
           }
 
-          // Si pas de formData, l'initialiser
           if (!this.formData || Object.keys(this.formData).length === 0) {
             this.formData = this.initializeFormData();
           }
 
-          // S'assurer que contact existe
           if (!this.formData.contact) {
             this.initializeContactData();
           }
@@ -596,6 +599,7 @@ private saveToLocalStorage() {
 
     // Générer un lien unique
     const timestamp = Date.now();
+    const random = Math.random().toString(36).substring(2, 8);
     const portfolioSlug = this.portfolioName.toLowerCase()
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/(^-|-$)/g, '');
@@ -603,30 +607,57 @@ private saveToLocalStorage() {
     const portfolioData = {
       name: this.portfolioName,
       templateName: this.templateName,
-      link: `https://portfolio-${userId}-${portfolioSlug}-${timestamp}.com`,
+      link: `https://portfolio-${userId}-${portfolioSlug}-${timestamp}-${random}.com`,
       linkedin: 'https://linkedin.com/in/mon-profil',
       jsonData: JSON.stringify(this.formData)
     };
 
-    console.log('🔵 Sauvegarde portfolio:', portfolioData);
+    console.log('🔵 Sauvegarde portfolio');
+    console.log('  - Mode:', this.isEditMode ? 'ÉDITION' : 'CRÉATION');
+    console.log('  - ID:', this.portfolioId);
+    console.log('  - Nom:', portfolioData.name);
 
-    // ✅ Créer ou mettre à jour selon le contexte
-    this.portfolioService.createPortfolio(userId, portfolioData).subscribe({
-      next: (response: any) => {
-        console.log('✅ Portfolio sauvegardé:', response);
-        alert('Portfolio sauvegardé avec succès !');
-        
-        // Nettoyer le localStorage après sauvegarde
-        localStorage.removeItem(`portfolio_${this.portfolioName}`);
-        localStorage.removeItem(`customSections_${this.portfolioName}`);
-        
-        this.router.navigate(['/myportfolio']);
-      },
-      error: (error: any) => {
-        console.error('❌ Erreur:', error);
-        alert('Erreur lors de la sauvegarde');
-      }
-    });
+    if (this.isEditMode && this.portfolioId) {
+      // ✅ MODE ÉDITION : Utiliser PUT
+      console.log('🔄 Mise à jour du portfolio existant...');
+      
+      this.portfolioService.updatePortfolio(userId, this.portfolioId, portfolioData).subscribe({
+        next: (response: any) => {
+          console.log('✅ Portfolio mis à jour:', response);
+          alert('Portfolio mis à jour avec succès !');
+          
+          // Nettoyer le localStorage
+          localStorage.removeItem(`portfolio_${this.portfolioName}`);
+          localStorage.removeItem(`customSections_${this.portfolioName}`);
+          
+          this.router.navigate(['/myportfolio']);
+        },
+        error: (error: any) => {
+          console.error('❌ Erreur mise à jour:', error);
+          alert('Erreur lors de la mise à jour: ' + (error.error?.message || 'Erreur inconnue'));
+        }
+      });
+    } else {
+      // ✅ MODE CRÉATION : Utiliser POST
+      console.log('➕ Création d\'un nouveau portfolio...');
+      
+      this.portfolioService.createPortfolio(userId, portfolioData).subscribe({
+        next: (response: any) => {
+          console.log('✅ Portfolio créé:', response);
+          alert('Portfolio créé avec succès !');
+          
+          // Nettoyer le localStorage
+          localStorage.removeItem(`portfolio_${this.portfolioName}`);
+          localStorage.removeItem(`customSections_${this.portfolioName}`);
+          
+          this.router.navigate(['/myportfolio']);
+        },
+        error: (error: any) => {
+          console.error('❌ Erreur création:', error);
+          alert('Erreur lors de la sauvegarde: ' + (error.error?.message || 'Erreur inconnue'));
+        }
+      });
+    }
   }
 
   showSaveDialog() {

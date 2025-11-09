@@ -563,11 +563,17 @@ private saveToLocalStorage() {
       return;
     }
 
+    //generer un lien unique
+    const timestamp = Date.now();
+    const portfolioSlug = this.portfolioName.toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')  // Remplacer les caractères spéciaux par des tirets
+      .replace(/(^-|-$)/g, '');
+
     // ✅ Format correct pour le backend
     const portfolioData = {
       name: this.portfolioName || 'Mon Portfolio',
       templateName: this.templateName,
-      link: 'https://monportfolio.com',
+      link: `https://portfolio-${userId}-${portfolioSlug}-${timestamp}.com`,
       linkedin: 'https://linkedin.com/in/mon-profil',
       jsonData: JSON.stringify(this.formData)  // ← Convertir en string JSON
     };

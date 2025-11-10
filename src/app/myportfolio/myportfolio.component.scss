@@ -1,21 +1,199 @@
+.myportfolio-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 3rem 2rem;
+  font-family: "Stack Sans Headline", sans-serif;
+
+  h1 {
+    font-size: 2.6rem;
+    color: #2c3e50;
+    margin-bottom: 2.5rem;
+    text-align: center;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+  }
+}
+
+/* --- Bouton Créer --- */
 .create-portfolio {
-  background-color: #6c0210;
+  display: block;
+  margin: 0 auto 3rem;
+  background: linear-gradient(135deg, #6c0210, #8a0315);
   color: white;
-  padding: 0.8rem 1.5rem;
-  border-radius: 0.6rem;
+  padding: 1rem 2.5rem;
+  border-radius: 12px;
   border: none;
   cursor: pointer;
   font-weight: bold;
   font-family: "BBH Sans Hegarty", sans-serif;
   font-size: 1.1rem;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  box-shadow: 0 4px 12px rgb(62, 1, 9);
-  transition: 0.3s ease, transform 0.2s ease;
+  letter-spacing: 1px;
+  box-shadow: 0 6px 20px rgba(108, 2, 16, 0.4);
+  transition: all 0.3s ease;
 
   &:hover {
-    background-color: #6c0210;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 14px rgb(87, 2, 13);
+    background: linear-gradient(135deg, #8a0315, #6c0210);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(108, 2, 16, 0.6);
+  }
+
+  &:active {
+    transform: translateY(-1px);
+  }
+}
+
+/* --- État vide --- */
+.empty {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: #7f8c8d;
+  font-size: 1.3rem;
+  background: #f8f9fa;
+  border-radius: 15px;
+  border: 2px dashed #ddd;
+  margin: 2rem 0;
+}
+
+/* --- Liste de portfolios (verticale) --- */
+.portfolio-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+/* --- Carte de portfolio --- */
+.portfolio-card {
+  background: #f8f9fa;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  padding: 1.5rem 2rem;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+  transition: all 0.25s ease;
+  position: relative;
+  animation: fadeInUp 0.5s ease-out;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+    border-color: #ccc;
+  }
+
+  h3 {
+    font-size: 1.4rem;
+    color: #2c3e50;
+    margin-bottom: 0.6rem;
+    font-weight: 700;
+  }
+
+  p {
+    color: #555;
+    margin-bottom: 0.4rem;
+    font-size: 1rem;
+  }
+
+  .date-info {
+    color: #7f8c8d;
+    font-size: 0.9rem;
+    font-weight: 400;
+    margin-bottom: 1rem;
+    font-family: "DM Sans", sans-serif;
+  }
+
+  /* --- Boutons --- */
+  .actions {
+    display: flex;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+    padding-top: 1rem;
+    border-top: 1px solid #e0e0e0;
+  }
+
+  button {
+    flex: 1;
+    min-width: 90px;
+    padding: 0.7rem 1rem;
+    border: none;
+    border-radius: 8px;
+    font-weight: 400; 
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: "DM Sans", sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    color: white;
+
+    &:active {
+      transform: scale(0.97);
+    }
+  }
+
+  .edit-btn {
+    background: #f3bda7;
+
+    &:hover {
+      background: #e4ac97;
+    }
+  }
+
+  .view-btn {
+    background: #ce8467;
+
+    &:hover {
+      background: #be775a;
+    }
+  }
+
+  .delete-btn {
+    background: #a74b27;
+
+    &:hover {
+      background: #8f3d1c;
+    }
+  }
+}
+
+/* --- Responsive --- */
+@media (max-width: 768px) {
+  .myportfolio-container {
+    padding: 2rem 1rem;
+
+    h1 {
+      font-size: 2rem;
+    }
+  }
+
+  .portfolio-card {
+    padding: 1.2rem 1.5rem;
+  }
+
+  .actions {
+    flex-direction: column;
+
+    button {
+      width: 100%;
+    }
+  }
+
+  .create-portfolio {
+    width: 100%;
+    padding: 1rem;
+    font-size: 1rem;
+  }
+}
+
+/* --- Animation d’apparition --- */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }

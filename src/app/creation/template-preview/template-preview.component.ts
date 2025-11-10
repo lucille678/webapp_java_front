@@ -164,7 +164,7 @@ ngOnInit(): void {
   // Récupérer le state de la navigation
   const state = history.state;
   
-  console.log('📋 State reçu:', state);
+  console.log(' State reçu:', state);
 
   // Récupérer le template et le nom du portfolio
   if (state?.template) {
@@ -176,10 +176,10 @@ ngOnInit(): void {
     this.templateName = this.template;
   }
 
-  // 🔥 IMPORTANT : Récupérer le nom du portfolio
+  // Récupérer le nom du portfolio
   const portfolioName = state?.portfolioName || 'Sans nom';
-  console.log('📦 Portfolio:', portfolioName);
-  console.log('📐 Template:', this.template);
+  console.log(' Portfolio:', portfolioName);
+  console.log(' Template:', this.template);
 
   // Charger les sections personnalisées AVANT les données
   if (portfolioName) {
@@ -190,7 +190,7 @@ ngOnInit(): void {
     if (savedCustomSections) {
       try {
         this.customSections = JSON.parse(savedCustomSections);
-        console.log('✅ Sections personnalisées chargées:', this.customSections);
+        console.log(' Sections personnalisées chargées:', this.customSections);
         
         // Ajouter les sections personnalisées à la navbar
         this.customSections.forEach(section => {
@@ -202,28 +202,28 @@ ngOnInit(): void {
           }
         });
       } catch (error) {
-        console.error('❌ Erreur parsing sections personnalisées:', error);
+        console.error(' Erreur parsing sections personnalisées:', error);
       }
     } else {
-      console.warn('⚠️ Aucune section personnalisée trouvée');
+      console.warn(' Aucune section personnalisée trouvée');
     }
   }
 
   // Récupérer les données
   if (state?.data && Object.keys(state.data).length > 0) {
     this.data = state.data;
-    console.log('✅ Données du state:', this.data);
+    console.log(' Données du state:', this.data);
   } else if (portfolioName) {
     const savedData = localStorage.getItem(`portfolio_${portfolioName}`);
-    console.log('🔍 Données localStorage:', savedData);
+    console.log(' Données localStorage:', savedData);
     
     if (savedData) {
       try {
         const parsed = JSON.parse(savedData);
         this.data = parsed.data || {};
-        console.log('✅ Données du localStorage:', this.data);
+        console.log(' Données du localStorage:', this.data);
       } catch (error) {
-        console.error('❌ Erreur parsing données:', error);
+        console.error(' Erreur parsing données:', error);
       }
     }
   }
@@ -233,7 +233,7 @@ ngOnInit(): void {
     this.loadTemplateStyle(this.template);
   }
 
-  console.log('📊 État final:');
+  console.log(' État final:');
   console.log('  - Sections:', this.sections);
   console.log('  - Custom sections:', this.customSections);
   console.log('  - Data:', this.data);

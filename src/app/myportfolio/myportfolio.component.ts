@@ -48,15 +48,15 @@ export class MyportfolioComponent implements OnInit {
     if (userId) {
       this.portfolioService.getPortfoliosByUser(userId).subscribe({
         next: (portfolios: any) => {
-          console.log('✅ Portfolios chargés:', portfolios);
+          console.log(' Portfolios chargés:', portfolios);
           this.portfolios = portfolios;
         },
         error: (error: any) => {
-          console.error('❌ Erreur:', error);
+          console.error(' Erreur:', error);
         }
       });
     } else {
-      console.error('❌ Utilisateur non connecté');
+      console.error(' Utilisateur non connecté');
       this.router.navigate(['/login']);
     }
   }
@@ -66,7 +66,7 @@ export class MyportfolioComponent implements OnInit {
   }
 
   editPortfolio(portfolio: Portfolio) {
-    console.log('🔧 Édition portfolio:', portfolio);
+    console.log(' Édition portfolio:', portfolio);
     
     try {
       const data = JSON.parse(portfolio.jsonData || '{}');
@@ -80,13 +80,13 @@ export class MyportfolioComponent implements OnInit {
         }
       });
     } catch (error) {
-      console.error('❌ Erreur parsing JSON:', error);
+      console.error(' Erreur parsing JSON:', error);
       alert('Erreur lors du chargement du portfolio');
     }
   }
 
   previewPortfolio(portfolio: Portfolio) {
-    console.log('👁️ Aperçu portfolio:', portfolio);
+    console.log(' Aperçu portfolio:', portfolio);
     
     try {
       const data = JSON.parse(portfolio.jsonData || '{}');
@@ -100,7 +100,7 @@ export class MyportfolioComponent implements OnInit {
         }
       });
     } catch (error) {
-      console.error('❌ Erreur parsing JSON:', error);
+      console.error(' Erreur parsing JSON:', error);
       alert('Erreur lors du chargement du portfolio');
     }
   }
@@ -111,11 +111,11 @@ export class MyportfolioComponent implements OnInit {
       if (userId) {
         this.portfolioService.deletePortfolio(userId, portfolio.idPortfolio).subscribe({
           next: () => {
-            console.log('✅ Portfolio supprimé');
+            console.log(' Portfolio supprimé');
             this.loadPortfolios();
           },
           error: (error: any) => {
-            console.error('❌ Erreur:', error);
+            console.error(' Erreur:', error);
           }
         });
       }

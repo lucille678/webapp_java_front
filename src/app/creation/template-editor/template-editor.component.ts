@@ -592,7 +592,7 @@ private saveToLocalStorage() {
 
     const userId = this.authService.getCurrentUserId();
     if (!userId) {
-      console.error('❌ Utilisateur non connecté');
+      console.error(' Utilisateur non connecté');
       alert('Vous devez être connecté pour sauvegarder');
       return;
     }
@@ -612,18 +612,18 @@ private saveToLocalStorage() {
       jsonData: JSON.stringify(this.formData)
     };
 
-    console.log('🔵 Sauvegarde portfolio');
+    console.log(' Sauvegarde portfolio');
     console.log('  - Mode:', this.isEditMode ? 'ÉDITION' : 'CRÉATION');
     console.log('  - ID:', this.portfolioId);
     console.log('  - Nom:', portfolioData.name);
 
     if (this.isEditMode && this.portfolioId) {
-      // ✅ MODE ÉDITION : Utiliser PUT
-      console.log('🔄 Mise à jour du portfolio existant...');
+      // MODE ÉDITION : Utiliser PUT
+      console.log(' Mise à jour du portfolio existant...');
       
       this.portfolioService.updatePortfolio(userId, this.portfolioId, portfolioData).subscribe({
         next: (response: any) => {
-          console.log('✅ Portfolio mis à jour:', response);
+          console.log('Portfolio mis à jour:', response);
           alert('Portfolio mis à jour avec succès !');
           
           // Nettoyer le localStorage
@@ -633,17 +633,17 @@ private saveToLocalStorage() {
           this.router.navigate(['/myportfolio']);
         },
         error: (error: any) => {
-          console.error('❌ Erreur mise à jour:', error);
+          console.error(' Erreur mise à jour:', error);
           alert('Erreur lors de la mise à jour: ' + (error.error?.message || 'Erreur inconnue'));
         }
       });
     } else {
-      // ✅ MODE CRÉATION : Utiliser POST
-      console.log('➕ Création d\'un nouveau portfolio...');
+      // MODE CRÉATION : Utiliser POST
+      console.log(' Création d\'un nouveau portfolio...');
       
       this.portfolioService.createPortfolio(userId, portfolioData).subscribe({
         next: (response: any) => {
-          console.log('✅ Portfolio créé:', response);
+          console.log(' Portfolio créé:', response);
           alert('Portfolio créé avec succès !');
           
           // Nettoyer le localStorage
@@ -653,7 +653,7 @@ private saveToLocalStorage() {
           this.router.navigate(['/myportfolio']);
         },
         error: (error: any) => {
-          console.error('❌ Erreur création:', error);
+          console.error(' Erreur création:', error);
           alert('Erreur lors de la sauvegarde: ' + (error.error?.message || 'Erreur inconnue'));
         }
       });

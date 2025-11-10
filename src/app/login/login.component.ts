@@ -37,11 +37,11 @@ export class LoginComponent {
     // Utilisation du mock pour tester sans BDD
     this.auth.login({ email, password }).subscribe({
       next: (response: any) => {
-        console.log('✅ Connexion réussie:', response.user);
+        console.log(' Connexion réussie:', response.user);
         this.router.navigate(['/myportfolio']);
       },
       error: (error: any) => {
-        console.error('❌ Erreur login:', error);
+        console.error(' Erreur login:', error);
         alert('Email ou mot de passe incorrect');
       }
     });

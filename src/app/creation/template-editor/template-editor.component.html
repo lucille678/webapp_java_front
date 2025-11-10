@@ -1,151 +1,347 @@
 <div class="editor" *ngIf="config">
   <h1>{{ config.title }}</h1>
 
+  <!-- Dialog/Popup pour le nom -->
+  <div *ngIf="showSavePopup" class="dialog-overlay" (click)="closeSaveDialog()">
+    <div class="dialog-content" (click)="$event.stopPropagation()">
+      <h2>Nommer votre portfolio</h2>
+      <input 
+        type="text" 
+        [(ngModel)]="portfolioNameInput" 
+        placeholder="Nom du portfolio"
+        class="portfolio-name-input"
+      >
+      <div class="dialog-actions">
+        <button (click)="closeSaveDialog()" class="cancel-btn">Annuler</button>
+        <button (click)="confirmSave()" class="save-btn">Sauvegarder</button>
+      </div>
+    </div>
+  </div>
+
   <form (ngSubmit)="onSubmit()">
+    <ng-container *ngFor="let section of config.sections">
+      <div class="section">
+        <div class="section-header">
+          <button type="button" class="section-toggle" (click)="section.open = !section.open">
+            {{ section.label }}
+            <span>{{ section.open ? '▲' : '▼' }}</span>
+          </button>
 
-    <div *ngFor="let section of config.sections" class="section">
-      <button type="button" class="section-toggle" (click)="section.open = !section.open">
-        {{ section.label }}
-        <span>{{ section.open ? '▲' : '▼' }}</span>
-      </button>
+          <button *ngIf="isCustomSection(section.name)"
+                  type="button"
+                  class="delete-section-btn"
+                  (click)="removeCustomSection(section.name)">
+            Supprimer
+          </button>
+        </div>
 
-      <div class="section-content" *ngIf="section.open">
-        <!-- Section NON répétable -->
-        <ng-container *ngIf="!section.repeatable">
-          <div *ngFor="let field of section.fields" class="field">
-            <label>{{ field.label }}</label>
+        <div class="section-content" *ngIf="section.open">
+          <!-- Section Compétences -->
+          <div *ngIf="section.name === 'competences'" class="competences-section">
+            <!-- Champs standards (Soft Skills, Hard Skills, Langues) -->
+            <div *ngFor="let field of section.fields" class="field">
+              <ng-container *ngIf="['softSkills', 'hardSkills', 'languages'].includes(field.name)">
+                <label>{{ field.label }}</label>
+                <textarea [(ngModel)]="formData[section.name][field.name]"
+                         [name]="section.name + '_' + field.name"></textarea>
+              </ng-container>
+            </div>
 
-            <!-- Champ texte/email -->
-            <input *ngIf="field.type === 'text' || field.type === 'email'"
-                   [type]="field.type"
-                   [(ngModel)]="formData[section.name][field.name]"
-                   [name]="section.name + '_' + field.name">
-
-            <!-- Champ textarea -->
-            <textarea *ngIf="field.type === 'textarea'"
-                      [(ngModel)]="formData[section.name][field.name]"
-                      [name]="section.name + '_' + field.name"></textarea>
-
-            <!-- Champ fichier -->
-            <div *ngIf="field.type === 'file'" class="file-field">
-              <input type="file"
-                     [id]="section.name + '_' + field.name"
-                     (change)="onFileChange($event, section.name, field.name)"
-                     [accept]="field.name === 'photo' ? 'image/*' : 'image/*,.pdf'">
+            <!-- Certificats -->
+            <div class="certificates-section">
+              <h4>Certificats</h4>
+              <button type="button" class="add-btn" (click)="addCertificate()">
+                + Ajouter un certificat
+              </button>
               
-              <!-- Preview avec bouton de suppression -->
-              <div class="file-preview" *ngIf="getFieldValue(section.name, field.name)?.content">
-                <img *ngIf="isImage(getFieldValue(section.name, field.name))"
-                     [src]="getFieldValue(section.name, field.name).content"
-                     [alt]="field.label">
-                <div *ngIf="isPDF(getFieldValue(section.name, field.name))"
-                     class="pdf-preview">PDF uploaded</div>
-                <button type="button" class="remove-file" 
-                        (click)="removeFile(section.name, field.name)">
-                  ✕
-                </button>
+              <div class="certificates-list" *ngIf="formData.competences.certificates?.length > 0">
+                <div *ngFor="let cert of formData.competences.certificates; let i = index" class="certificate-item">
+                  <button type="button" class="remove-btn" (click)="removeCertificate(i)">✕</button>
+                  <div class="certificate-content">
+                    <input type="text"
+                           [(ngModel)]="cert.name"
+                           [name]="'certificate_name_' + i"
+                           placeholder="Nom du certificat">
+                    
+                    <div class="file-upload">
+                      <input type="file"
+                             (change)="onCertificateFileChange($event, i)"
+                             [accept]="'.pdf,image/*'"
+                             [id]="'certificate_file_' + i">
+                      <small *ngIf="cert.file?.name">Fichier : {{ cert.file.name }}</small>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
 
-            <!-- Prévisualisation image -->
-            <img *ngIf="formData[section.name][field.name]?.type?.startsWith('image/')"
-                 [src]="formData[section.name][field.name]?.content"
-                 alt="Aperçu"
-                 style="max-width: 150px; margin-top: 10px; border-radius: 8px;">
-
-            <!-- Aperçu PDF -->
-            <div *ngIf="formData[section.name][field.name]?.type === 'application/pdf'"
-                 class="pdf-preview">
-              <span>{{ formData[section.name][field.name]?.name }}</span>
-              <a [href]="formData[section.name][field.name]?.content" download>📄 Télécharger</a>
+            <!-- Catégories personnalisées -->
+            <div class="custom-categories-section">
+              <h4>Catégories personnalisées</h4>
+              <button type="button" class="add-btn" (click)="addCategory()">
+                + Ajouter une catégorie
+              </button>
+              
+              <div class="custom-categories-list" *ngIf="formData.competences.customCategories?.length > 0">
+                <div *ngFor="let category of formData.competences.customCategories; let i = index" class="custom-category-item">
+                  <button type="button" class="remove-btn" (click)="removeCategory(i)">✕</button>
+                  <div class="category-content">
+                    <input type="text"
+                           [(ngModel)]="category.name"
+                           [name]="'category_name_' + i"
+                           placeholder="Nom de la catégorie">
+                    
+                    <textarea [(ngModel)]="category.content"
+                             [name]="'category_content_' + i"
+                             placeholder="Description de la catégorie"></textarea>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-        </ng-container>
 
-        <!-- Section RÉPÉTABLE -->
-        <ng-container *ngIf="section.repeatable">
-          <div *ngFor="let item of formData[section.name]; let i = index" class="repeatable-item">
+          <!-- Section Contact -->
+          <div *ngIf="section.name === 'contact'" class="contact-section">
             <div *ngFor="let field of section.fields" class="field">
-              <!-- Champs normaux -->
-              <ng-container *ngIf="field.type !== 'file'">
+              <label>{{ field.label }}</label>
+              <input [type]="field.type"
+                    [(ngModel)]="formData.contact[field.name]"
+                    [name]="'contact_' + field.name"
+                    [placeholder]="field.label">
+            </div>
+          </div>
+
+          <!-- Sections personnalisées (custom) -->
+          <ng-container *ngIf="isCustomSection(section.name)">
+            <div class="custom-section-item">
+              <div *ngFor="let field of section.fields" class="field">
                 <label>{{ field.label }}</label>
-                
-                <!-- Champs date pour Formation et Expérience -->
-                <ng-container *ngIf="section.name === 'formation' || section.name === 'experience'">
-                  <div class="date-range" *ngIf="field.name === 'dates'">
-                    <div class="field">
-                      <label>Date de début</label>
-                      <input type="date" 
-                             [(ngModel)]="item.startDate"
-                             [name]="section.name + '_' + i + '_startDate'">
+
+                <!-- Champ texte -->
+                <input *ngIf="field.type === 'text'"
+                       type="text"
+                       [(ngModel)]="formData[section.name][field.name]"
+                       [name]="section.name + '_' + field.name"
+                       [placeholder]="field.label">
+
+                <!-- Champ textarea -->
+                <textarea *ngIf="field.type === 'textarea'"
+                          [(ngModel)]="formData[section.name][field.name]"
+                          [name]="section.name + '_' + field.name"
+                          [placeholder]="field.label"></textarea>
+
+                <!-- Champ date -->
+                <input *ngIf="field.type === 'date'"
+                       type="date"
+                       [(ngModel)]="formData[section.name][field.name]"
+                       [name]="section.name + '_' + field.name">
+
+                <!-- Champ fichier/image -->
+                <div *ngIf="field.type === 'file'" class="file-field">
+                  <input type="file"
+                        [id]="section.name + '_' + field.name"
+                        (change)="onFileChange($event, section.name, field.name)"
+                        [accept]="field.name === 'image' ? 'image/*' : '*'">
+                  
+                  <div class="file-preview" *ngIf="getFieldValue(section.name, field.name)?.content">
+                    <!-- Afficher l'image si c'est une image -->
+                    <img *ngIf="isImage(getFieldValue(section.name, field.name))"
+                        [src]="getFieldValue(section.name, field.name).content"
+                        [alt]="field.label">
+                    
+                    <!-- Afficher le nom du fichier si ce n'est pas une image -->
+                    <div *ngIf="!isImage(getFieldValue(section.name, field.name))" class="file-info">
+                      <span>📎 {{ getFieldValue(section.name, field.name).name }}</span>
                     </div>
-                    <div class="field">
-                      <label>Date de fin</label>
-                      <input type="date" 
-                             [(ngModel)]="item.endDate"
-                             [name]="section.name + '_' + i + '_endDate'">
-                      <div class="checkbox-field">
-                        <input type="checkbox" 
-                               [(ngModel)]="item.current"
-                               [name]="section.name + '_' + i + '_current'">
-                        <label>En cours</label>
+                    
+                    <button type="button" class="remove-file" 
+                            (click)="removeFile(section.name, field.name)">✕</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+
+          <!-- Autres sections standard (non-compétences, non-contact, non-custom) -->
+          <ng-container *ngIf="section.name !== 'competences' && section.name !== 'contact' && !isCustomSection(section.name)">
+            <!-- Non-repeatable sections -->
+            <ng-container *ngIf="!section.repeatable">
+              <div *ngFor="let field of section.fields" class="field">
+                <label>{{ field.label }}</label>
+
+                <!-- Text or email -->
+                <input *ngIf="field.type === 'text' || field.type === 'email'"
+                       [type]="field.type"
+                       [(ngModel)]="formData[section.name][field.name]"
+                       [name]="section.name + '_' + field.name">
+
+                <!-- Textarea -->
+                <textarea *ngIf="field.type === 'textarea'"
+                         [(ngModel)]="formData[section.name][field.name]"
+                         [name]="section.name + '_' + field.name"></textarea>
+
+                <!-- File input with preview -->
+                <div *ngIf="field.type === 'file'" class="file-field">
+                  <input type="file"
+                         [id]="section.name + '_' + field.name"
+                         (change)="onFileChange($event, section.name, field.name)"
+                         [accept]="field.name === 'photo' ? 'image/*' : 'image/*,.pdf'">
+                  
+                  <div class="file-preview" *ngIf="getFieldValue(section.name, field.name)?.content">
+                    <img *ngIf="isImage(getFieldValue(section.name, field.name))"
+                         [src]="getFieldValue(section.name, field.name).content"
+                         [alt]="field.label">
+                    <button type="button" class="remove-file" 
+                            (click)="removeFile(section.name, field.name)">✕</button>
+                  </div>
+                </div>
+
+                <!-- Date field -->
+                <ng-container *ngIf="field.type === 'date'">
+                  <div class="date-field">
+                    <div class="date-inputs">
+                      <!-- Date de début -->
+                      <div class="date-input-group" *ngIf="field.name === 'startDate'">
+                        <label>Date de début</label>
+                        <input type="date" 
+                               [(ngModel)]="formData[section.name][field.name]"
+                               [name]="section.name + '_' + field.name">
+                      </div>
+                      
+                      <!-- Date de fin -->
+                      <div class="date-input-group" *ngIf="field.name === 'endDate'">
+                        <label>Date de fin</label>
+                        <input type="date" 
+                               [(ngModel)]="formData[section.name][field.name]"
+                               [name]="section.name + '_' + field.name"
+                               [disabled]="formData[section.name].current">
+                        
+                        <div class="current-checkbox">
+                          <label>
+                            <input type="checkbox" 
+                                   [(ngModel)]="formData[section.name].current"
+                                   [name]="section.name + '_current'">
+                            En cours
+                          </label>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </ng-container>
+              </div>
+            </ng-container>
 
-                <!-- Autres champs -->
-                <ng-container *ngIf="field.name !== 'dates'">
-                  <input *ngIf="field.type === 'text'" 
-                         type="text"
-                         [(ngModel)]="item[field.name]"
-                         [name]="section.name + '_' + i + '_' + field.name">
-                  
-                  <textarea *ngIf="field.type === 'textarea'"
+            <!-- Repeatable sections (Formation/Experience) -->
+            <ng-container *ngIf="section.repeatable">
+              <div *ngFor="let item of formData[section.name]; let i = index" class="repeatable-item">
+                <button type="button" class="remove-btn" (click)="removeItem(section.name, i)">Supprimer</button>
+                
+                <div *ngFor="let field of section.fields" class="field">
+                  <label>{{ field.label }}</label>
+
+                  <!-- Special handling for dates in formation/experience -->
+                  <div *ngIf="(section.name === 'formation' || section.name === 'experience') && field.name === 'dates'" class="date-range">
+                    <div class="date-input">
+                      <label>Date de début</label>
+                      <input type="date" [(ngModel)]="item.startDate" [name]="section.name + '_' + i + '_startDate'">
+                    </div>
+
+                    <div class="date-input">
+                      <label>Date de fin</label>
+                      <input type="date" [(ngModel)]="item.endDate" [name]="section.name + '_' + i + '_endDate'"
+                             [disabled]="item.current">
+                      <div class="current-checkbox">
+                        <label>
+                          <input type="checkbox" [(ngModel)]="item.current" [name]="section.name + '_' + i + '_current'">
+                          En cours
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Regular fields -->
+                  <ng-container *ngIf="field.name !== 'dates'">
+                    <input *ngIf="field.type === 'text'"
+                           type="text"
                            [(ngModel)]="item[field.name]"
                            [name]="section.name + '_' + i + '_' + field.name">
-                  </textarea>
-                </ng-container>
-              </ng-container>
+                    
+                    <textarea *ngIf="field.type === 'textarea'"
+                            [(ngModel)]="item[field.name]"
+                            [name]="section.name + '_' + i + '_' + field.name"></textarea>
+                  </ng-container>
 
-              <!-- Champs fichier -->
-              <ng-container *ngIf="field.type === 'file'">
-                <!-- Champ fichier -->
-                <div *ngIf="field.type === 'file'" class="file-field">
-                  <input type="file"
-                         [id]="section.name + '_' + field.name"
-                         (change)="onFileChange($event, section.name, field.name, i)"
-                         [accept]="field.name === 'photo' ? 'image/*' : 'image/*,.pdf'">
-                
-                  <!-- Preview avec bouton de suppression -->
-                  <div class="file-preview" *ngIf="getFieldValue(section.name, field.name, i)?.content">
-                    <img *ngIf="isImage(getFieldValue(section.name, field.name, i))"
-                         [src]="getFieldValue(section.name, field.name, i).content"
-                         [alt]="field.label">
-                    <div *ngIf="isPDF(getFieldValue(section.name, field.name, i))"
-                         class="pdf-preview">PDF uploaded</div>
-                    <button type="button" class="remove-file" 
-                            (click)="removeFile(section.name, field.name, i)">
-                      ✕
-                    </button>
+                  <!-- File fields -->
+                  <div *ngIf="field.type === 'file'" class="file-field">
+                    <input type="file"
+                           [id]="section.name + '_' + field.name + '_' + i"
+                           (change)="onFileChange($event, section.name, field.name, i)"
+                           [accept]="field.name === 'photo' ? 'image/*' : 'image/*,.pdf'">
+                    <div class="file-preview" *ngIf="getFieldValue(section.name, field.name, i)?.content">
+                      <img *ngIf="isImage(getFieldValue(section.name, field.name, i))"
+                           [src]="getFieldValue(section.name, field.name, i).content"
+                           [alt]="field.label">
+                      <button type="button" class="remove-file" 
+                              (click)="removeFile(section.name, field.name, i)">
+                        ✕
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </ng-container>
-            </div>
+              </div>
+              <button type="button" class="add-btn" (click)="addItem(section.name)">+ Ajouter {{ section.label }}</button>
+            </ng-container>
+          </ng-container>
+        </div>
+      </div>
+    </ng-container>
 
-            <button type="button" class="remove-btn" (click)="removeItem(section.name, i)">
-              Supprimer
-            </button>
+    <!-- Section pour ajouter une nouvelle catégorie -->
+    <div class="section">
+      <div class="section-header">
+        <button type="button" class="section-toggle" (click)="customSectionOpen = !customSectionOpen">
+          Ajouter une nouvelle section
+          <span>{{ customSectionOpen ? '▲' : '▼' }}</span>
+        </button>
+      </div>
+
+      <div class="section-content" *ngIf="customSectionOpen">
+        <div class="custom-section-creator">
+          <input type="text" [(ngModel)]="newSection.name" name="newSectionName" placeholder="Nom de la section">
+          
+          <div class="field-types">
+            <label>
+              <input type="checkbox" [(ngModel)]="newSection.hasText" name="hasText">
+              Champ texte
+            </label>
+            <label>
+              <input type="checkbox" [(ngModel)]="newSection.hasImage" name="hasImage">
+              Images
+            </label>
+            <label>
+              <input type="checkbox" [(ngModel)]="newSection.hasFile" name="hasFile">
+              Fichiers
+            </label>
+            <label>
+              <input type="checkbox" [(ngModel)]="newSection.hasDate" name="hasDate">
+              Date
+            </label>
+            <label>
+              <input type="checkbox" [(ngModel)]="newSection.hasPeriod" name="hasPeriod">
+              Période
+            </label>
+
           </div>
-
-          <button type="button" class="add-btn" (click)="addItem(section.name)">
-            + Ajouter {{ section.label }}
+          
+          <button type="button" class="create-section-btn" (click)="createNewSection()">
+            + Créer la section
           </button>
-        </ng-container>
+        </div>
       </div>
     </div>
 
-    <button type="submit">Voir mon portfolio</button>
+    <!-- Bouton de soumission -->
+    <button type="submit" class="submit-btn">Voir mon portfolio</button>
+    <button type="button" class="save-btn" (click)="showSaveDialog()">Sauvegarder le portfolio</button>
   </form>
 </div>
-

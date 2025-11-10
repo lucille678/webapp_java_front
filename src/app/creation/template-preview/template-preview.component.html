@@ -1,20 +1,26 @@
-<div class="classic-template">
+<div [class]="templateName + '-template'" class="portfolio-preview">
   <!-- Navbar fixe -->
   <nav class="portfolio-nav" [class.scrolled]="isScrolled">
     <div class="nav-content">
-      <div class="nav-logo">Mon Portfolio</div>
+      <h1 class="nav-title">Mon Portfolio</h1>
+      <button class="mobile-menu-btn" (click)="toggleMobileMenu()">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
       <ul class="nav-links" [class.mobile-open]="mobileMenuOpen">
-        <li *ngFor="let section of sections" 
-            [class.active]="activeSection === section.id"
-            (click)="scrollToSection(section.id)">
-          {{ section.label }}
-        </li>
+        <ng-container *ngFor="let section of sections">
+          <li *ngIf="section.id !== 'contact'"
+              [class.active]="activeSection === section.id"
+              (click)="scrollToSection(section.id)">
+            {{ section.label }}
+          </li>
+        </ng-container>
       </ul>
       <div class="nav-actions">
-        <button class="btn-edit" (click)="goBackToEdit()">Modifier</button>
-        <button class="btn-publish" (click)="publish()">Publier</button>
+        <button class="edit-btn" (click)="goBackToEdit()">Modifier</button>
+        <button class="publish-btn" (click)="publish()">Publier</button>
       </div>
-      <button class="mobile-toggle" (click)="toggleMobileMenu()">☰</button>
     </div>
   </nav>
 
@@ -22,48 +28,43 @@
   <div class="portfolio-content">
     <!-- Section Accueil -->
     <header id="accueil">
-      <div class="header-content">
-        <div class="profile-section">
-          <img *ngIf="data?.accueil?.photo?.content" 
-               [src]="data?.accueil?.photo?.content" 
-               alt="Photo de profil"
-               class="profile-image">
-          <h1>{{data?.accueil?.firstName}} {{data?.accueil?.lastName}}</h1>
-        </div>
-        
-        <div class="intro-section">
-          <h2 class="objective">{{data?.accueil?.objective}}</h2>
-          <p class="bio">{{data?.accueil?.bio}}</p>
+      <div class="header-content" *ngIf="data?.accueil">
+        <img *ngIf="data?.accueil?.photo?.content" 
+             [src]="data?.accueil?.photo?.content" 
+             alt="Photo de profil">
+        <div>
+          <h1>{{ data?.accueil?.firstName }} {{ data?.accueil?.lastName }}</h1>
+          <p>{{ data?.accueil?.objective }}</p>
+          <p class="bio">{{ data?.accueil?.bio }}</p>
           <p class="location" *ngIf="data?.accueil?.locations">
-            <i class="fas fa-map-marker-alt"></i> {{data?.accueil?.locations}}
+            {{ data?.accueil?.locations }}
           </p>
         </div>
       </div>
     </header>
 
     <!-- Section Formations -->
-    <section id="formations" *ngIf="data?.formation">
+    <section id="formations" *ngIf="data?.formation?.length">
       <h2>Formations</h2>
       <div class="formations-container">
-        <div class="formation-item" *ngFor="let formation of data?.formation">
-          <h3>{{formation.degree}}</h3>
-          <p class="date">{{formatDateRange(formation.startDate, formation.endDate)}}</p>
-          <p class="description">{{formation.description}}</p>
+        <div class="formation-item" *ngFor="let formation of data.formation">
+          <h3>{{ formation.degree }}</h3>
+          <p class="school">{{ formation.school }}</p>
+          <p class="date">{{ formatDateRange(formation.startDate, formation.endDate, formation.current) }}</p>
+          <p class="description">{{ formation.description }}</p>
         </div>
       </div>
     </section>
 
     <!-- Section Expériences -->
-    <section id="experiences" *ngIf="data?.experience">
+    <section id="experiences" *ngIf="data?.experience?.length">
       <h2>Expériences</h2>
       <div class="experiences-container">
-        <div class="experience-item" *ngFor="let exp of data?.experience">
-          <div class="experience-header">
-            <h3>{{exp.jobTitle}}</h3>
-            <h4>{{exp.company}}</h4>
-            <p class="date">{{formatDateRange(exp.startDate, exp.endDate)}}</p>
-          </div>
-          <p class="description">{{exp.description}}</p>
+        <div class="experience-item" *ngFor="let exp of data.experience">
+          <h3>{{ exp.jobTitle }}</h3>
+          <h4>{{ exp.company }}</h4>
+          <p class="date">{{ formatDateRange(exp.startDate, exp.endDate, exp.current) }}</p>
+          <p class="description">{{ exp.description }}</p>
         </div>
       </div>
     </section>
@@ -71,30 +72,164 @@
     <!-- Section Compétences -->
     <section id="competences" *ngIf="data?.competences">
       <h2>Compétences</h2>
-      <div class="competences-grid">
-        <div class="competence-card">
+      <div class="competences-container">
+        <div class="competence-card" *ngIf="data?.competences?.softSkills">
           <h3>Soft Skills</h3>
-          <p>{{ data.competences.softSkills }}</p>
+          <p>{{ data?.competences?.softSkills }}</p>
         </div>
-        <div class="competence-card">
+        <div class="competence-card" *ngIf="data?.competences?.hardSkills">
           <h3>Hard Skills</h3>
-          <p>{{ data.competences.hardSkills }}</p>
+          <p>{{ data?.competences?.hardSkills }}</p>
         </div>
-        <div class="competence-card">
+        <div class="competence-card" *ngIf="data?.competences?.languages">
           <h3>Langues</h3>
-          <p>{{ data.competences.languages }}</p>
+          <p>{{ data?.competences?.languages }}</p>
         </div>
-        <div class="competence-card" *ngIf="data.competences.certificates">
-          <h3>Certificats</h3>
-          <p>{{ data.competences.certificates }}</p>
-          <a *ngIf="data.competences.certificateFile?.content" 
-             [href]="data.competences.certificateFile.content" 
-             target="_blank"
-             class="certificate-link">
-            Voir le certificat
-          </a>
+
+        <!-- Certificats -->
+        <div class="competence-card certificates" *ngIf="data?.competences?.certificates?.length">
+          <h3>Certifications</h3>
+          <div class="certificates-container">
+            <div class="certificate-item" *ngFor="let cert of data?.competences?.certificates || []">
+              <span>{{ cert?.name }}</span>
+
+              <ng-container *ngIf="cert?.file">
+                <!-- Si c'est une image, l'afficher -->
+                <img *ngIf="cert.file?.type?.startsWith('image/')"
+                    [src]="cert.file?.content"
+                    [alt]="cert.name"
+                    class="certificate-preview"
+                    (click)="openInNewTab(cert.file?.content)">
+                
+                <!-- Lien de téléchargement -->
+                <a [href]="cert.file?.content"
+                  [download]="cert.file?.name || cert.name"
+                  class="certificate-link">
+                  {{ cert.file?.type?.startsWith('image/') ? 'Voir l\'image' : 'Télécharger' }}
+                </a>
+              </ng-container>
+            </div>
+          </div>
+        </div>
+
+
+        <!-- Catégories personnalisées -->
+        <div class="competence-card" *ngFor="let category of data?.competences?.customCategories || []">
+          <h3>{{ category?.name }}</h3>
+          <p>{{ category?.content }}</p>
         </div>
       </div>
     </section>
+
+    <!-- Sections personnalisées -->
+    <ng-container *ngFor="let section of customSections">
+      <section [id]="section.name" *ngIf="getSectionData(section.name)">
+        <h2>{{ section.label }}</h2>
+        <div [class]="section.name + '-container'">
+          <div [class]="section.name + '-content'">
+            <ng-container *ngFor="let field of section.fields">
+              
+              <!--  Affichage du texte -->
+              <p *ngIf="field.type === 'text' && getSectionFieldData(section.name, field.name)">
+                {{ getSectionFieldData(section.name, field.name) }}
+              </p>
+              
+              <!-- Affichage du textarea -->
+              <p *ngIf="field.type === 'textarea' && getSectionFieldData(section.name, field.name)" 
+                style="white-space: pre-wrap;">
+                {{ getSectionFieldData(section.name, field.name) }}
+              </p>
+              
+              <!-- Affichage du fichier/image -->
+              <div *ngIf="field.type === 'file' && getSectionFieldData(section.name, field.name) as fileData" 
+                  class="file-preview-container">
+                <ng-container *ngIf="fileData?.content">
+                  <!-- Si c'est une image -->
+                  <img *ngIf="fileData.type?.startsWith('image/')"
+                      [src]="fileData.content" 
+                      [alt]="field.label"
+                      (click)="openInNewTab(fileData.content)"
+                      style="cursor: pointer;">
+                  
+                  <!-- Si c'est un fichier (PDF, etc.) -->
+                  <a *ngIf="!fileData.type?.startsWith('image/')"
+                    [href]="fileData.content"
+                    [download]="fileData.name"
+                    class="file-link">
+                     Télécharger {{ fileData.name }}
+                  </a>
+                </ng-container>
+              </div>
+              
+              <!-- Affichage d'UNE SEULE date (pas startDate/endDate) -->
+              <p *ngIf="field.type === 'date' && field.name === 'date' && getSectionFieldData(section.name, field.name)" 
+                class="date">
+                📅 {{ formatSingleDate(getSectionFieldData(section.name, field.name)) }}
+              </p>
+              
+            </ng-container>
+            
+            <!-- Affichage de la PÉRIODE (startDate + endDate) - UNE SEULE FOIS -->
+            <p *ngIf="getSectionFieldData(section.name, 'startDate') || getSectionFieldData(section.name, 'endDate')" 
+              class="date">
+              {{ formatDateRange(
+                  getSectionFieldData(section.name, 'startDate'),
+                  getSectionFieldData(section.name, 'endDate'),
+                  getSectionFieldData(section.name, 'current')
+                ) }}
+            </p>
+            
+          </div>
+        </div>
+      </section>
+    </ng-container>
   </div>
+
+  <!-- Footer Contact -->
+  <footer id="contact" *ngIf="data?.contact">
+    <div class="footer-content">
+      <div class="footer-section" *ngIf="data?.contact?.email || data?.contact?.phone || data?.contact?.address">
+        <h3>Contact</h3>
+        <div class="contact-info">
+          <a *ngIf="data?.contact?.email" [href]="'mailto:' + data?.contact?.email" class="contact-item">
+            <span>✉</span>
+            <span>{{ data?.contact?.email }}</span>
+          </a>
+          <a *ngIf="data?.contact?.phone" [href]="'tel:' + data?.contact?.phone" class="contact-item">
+            <img src="assets/icons/phone.png" alt="Téléphone" class="contact-icon">
+            <span>{{ data?.contact?.phone }}</span>
+          </a>
+          <div *ngIf="data?.contact?.address" class="contact-item">
+            <img src="assets/icons/location.png" alt="Adresse" class="contact-icon">
+            <span>{{ data?.contact?.address }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-section" *ngIf="data?.contact?.linkedin || data?.contact?.github || data?.contact?.twitter">
+        <h3>Réseaux sociaux</h3>
+          <a *ngIf="data?.contact?.linkedin"
+            [href]="getValidUrl(data?.contact?.linkedin || '')"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="social-link"
+            title="LinkedIn">
+            <img src="assets/icons/linkedin.svg" alt="LinkedIn">
+          </a>
+
+          <a *ngIf="data?.contact?.github"
+            [href]="getValidUrl(data?.contact?.github || '')"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="social-link"
+            title="GitHub">
+            <img src="assets/icons/github.svg" alt="GitHub">
+          </a>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>© {{ currentYear }} {{ data?.accueil?.firstName }} {{ data?.accueil?.lastName }}. Tous droits réservés.</p>
+    </div>
+  </footer>
 </div>

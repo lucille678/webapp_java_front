@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Link } from 'models/links.model';
+import { Link } from '../models/links.model';
 import { AuthService } from '../services/auth.service';
 import { Router } from '@angular/router';
 
@@ -12,7 +12,6 @@ export class NavbarComponent implements OnInit {
   links: Link[] = [
     { name: 'Accueil', href: '/home' },
     { name: 'Mes Portfolios', href: '/myportfolio' },
-    { name: 'Mon Audience', href: '/statistics' },
   ];
 
   isAuthenticated = false;
@@ -36,7 +35,7 @@ export class NavbarComponent implements OnInit {
   }
 
   register() {
-    this.router.navigate(['/inscription']);
+    this.router.navigate(['/register']);
     this.showDropdown = false;
   }
 

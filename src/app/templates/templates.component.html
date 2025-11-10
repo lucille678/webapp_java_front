@@ -1,11 +1,14 @@
 <div class="templates-container">
-  <h1>Choisissez votre template</h1>
+  <h1>Choisissez un template</h1>
 
   <div class="templates-grid">
-    <div class="template-card" (click)="chooseTemplate('classic')">Classic</div>
-    <div class="template-card" (click)="chooseTemplate('modern')">Modern</div>
-    <div class="template-card" (click)="chooseTemplate('creative')">Creative</div>
+    <div
+      class="template-card"
+      *ngFor="let template of templates"
+      (click)="selectTemplate(template.name)"
+    >
+      <img [src]="template.image" [alt]="template.displayName" />
+      <h2>{{ template.displayName }}</h2>
+    </div>
   </div>
 </div>
-
-

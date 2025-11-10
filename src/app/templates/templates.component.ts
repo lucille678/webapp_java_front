@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
 
 interface Template {
   name: string;
@@ -10,7 +11,7 @@ interface Template {
 @Component({
   selector: 'templates',
   standalone: true,
-  imports: [],
+  imports: [CommonModule],
   templateUrl: './templates.component.html',
   styleUrl: './templates.component.scss'
 })
@@ -20,10 +21,15 @@ export class TemplatesComponent {
     { name: 'modern', displayName: 'Moderne', image: 'assets/templates/modern/preview.png' },
     { name: 'creative', displayName: 'Créatif', image: 'assets/templates/creative/preview.png' }
   ];
+
   constructor(private router: Router) {}
 
-  chooseTemplate(templateName: string) {
-    this.router.navigate(['/creation/template-editor', templateName]);
+  selectTemplate(templateName: string) {
+    // Génère un nom par défaut basé sur la date
+    const defaultName = `Portfolio ${new Date().toLocaleDateString('fr-FR')}`;
+    
+    this.router.navigate(['/creation/template-editor', templateName], {
+      state: { portfolioName: defaultName }
+    });
   }
 }
-

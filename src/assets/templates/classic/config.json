@@ -40,16 +40,22 @@
       "fields": [
         { "name": "softSkills", "label": "Soft Skills", "type": "textarea" },
         { "name": "hardSkills", "label": "Hard Skills", "type": "textarea" },
-        { "name": "languages", "label": "Langues", "type": "textarea" },
-        { "name": "certificates", "label": "Certificats", "type": "textarea" },
-        { "name": "certificateFile", "label": "Uploader un certificat (PDF ou image)", "type": "file" },
-        { 
-          "name": "customCategories",
-          "label": "Catégories personnalisées",
-          "type": "custom-category",
-          "repeatable": true
-        }
+        { "name": "languages", "label": "Langues", "type": "textarea" }
+      ]
+    },
+    {
+      "name": "contact",
+      "label": "Contact",
+      "open": true,
+      "fields": [
+        { "name": "email", "label": "Email", "type": "email" },
+        { "name": "phone", "label": "Téléphone", "type": "text" },
+        { "name": "address", "label": "Adresse", "type": "text" },
+        { "name": "linkedin", "label": "LinkedIn (URL)", "type": "text" },
+        { "name": "github", "label": "GitHub (URL)", "type": "text" }
       ]
     }
-  ]
+  ],
+  "customSections": []
 }
+

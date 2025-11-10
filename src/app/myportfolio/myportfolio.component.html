@@ -1,1 +1,30 @@
-<button class="create-portfolio" (click)="createPortfolio()">Creer mon portfolio</button>
+<div class="myportfolio-container">
+  <h1>Mes Portfolios</h1>
+
+  <button class="create-portfolio" (click)="createPortfolio()">Creer un nouveau portfolio</button>
+
+  <div *ngIf="portfolios.length === 0" class="empty">
+    Aucun portfolio enregistré pour le moment.
+  </div>
+
+  <div class="portfolio-list" *ngIf="portfolios.length > 0">
+    <div class="portfolio-card" *ngFor="let p of portfolios">
+      <h3>{{ p.namePortfolio }}</h3>
+      <p>Template : {{ p.templateName }}</p>
+      <p class="date-info">Créé le: {{ p.creationDate | date:'dd/MM/yyyy' }}</p>
+      <div class="actions">
+        <button (click)="editPortfolio(p)" class="edit-btn">
+          Modifier
+        </button>
+        
+        <button (click)="previewPortfolio(p)" class="view-btn">
+          Voir
+        </button>
+        
+        <button (click)="deletePortfolio(p)" class="delete-btn">
+          Supprimer
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

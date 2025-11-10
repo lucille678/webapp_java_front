@@ -58,7 +58,7 @@ export class LoginComponent {
   }
 
   goToRegister() {
-    this.router.navigate(['/inscription']);
+    this.router.navigate(['/register']);
   }
 }
 

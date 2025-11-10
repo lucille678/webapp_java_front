@@ -35,7 +35,7 @@ export class NavbarComponent implements OnInit {
   }
 
   register() {
-    this.router.navigate(['/inscription']);
+    this.router.navigate(['/register']);
     this.showDropdown = false;
   }
 
